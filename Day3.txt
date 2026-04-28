@@ -1,0 +1,275 @@
+1. 🧭 Overview
+1.1 Product Name
+
+Academic Risk Lab: Breach Prevention (Day 3)
+
+1.2 Objective
+
+Build an interactive, gamified training simulation to help recruitment screening agents accurately validate education, graduation, and eligibility criteria.
+
+1.3 Key Outcome
+
+By the end of the experience, agents should be able to:
+
+Identify academic eligibility issues
+Detect inconsistencies across resume and application data
+Make correct decisions under uncertainty
+Apply escalation logic appropriately
+Provide audit-ready justifications
+2. 🎯 Problem Statement
+
+Current training methods (MCQs, static exercises) fail to:
+
+Simulate real-world ambiguity
+Build decision-making skills
+Reinforce accountability
+Train agents to handle incomplete or conflicting data
+
+This leads to:
+
+Incorrect approvals
+Unnecessary escalations
+Audit risks
+3. 💡 Solution
+
+A simulation-based individual gameplay system where agents:
+
+Investigate candidate education profiles
+Reveal hidden data using limited evidence
+Tag risks
+Make final decisions (Proceed / Reject / Escalate)
+Receive immediate feedback with consequences
+4. 🎮 Experience Design
+4.1 Experience Type
+50% Realistic (screening dashboard)
+50% Gamified (risk meter, scoring, time pressure)
+4.2 Narrative Style
+
+Light system-driven prompts:
+
+“New Candidate Alert”
+“Investigation Required”
+“Potential Risk Detected”
+“Decision Locked”
+“Audit Risk Updated”
+5. 👤 Target Users
+Recruitment Screening Agents
+New hires in screening roles
+QA / Audit trainees
+6. 🧩 Core Gameplay Loop
+Candidate profile appears
+Agent reviews visible data
+Agent reveals hidden data (limited tokens)
+Agent tags risks
+Agent selects decision:
+Proceed
+Reject
+Escalate
+Agent provides justification
+System gives feedback
+Score + Risk Meter update
+Move to next scenario
+7. 🧱 MVP Scope
+7.1 Included
+1 complete game: Timeline Collapse
+5 playable scenarios
+Scoring system
+Risk meter
+Feedback system
+Final performance report
+7.2 Excluded (Future Scope)
+Multiple games (Degree, CGPA, University)
+Multiplayer mode
+Backend storage
+Analytics dashboard
+8. 🧠 Game Design: Timeline Collapse
+8.1 Objective
+
+Validate graduation timelines and detect inconsistencies
+
+8.2 Scenarios (5 Total)
+Scenario	Description	Decision
+1	Resume vs portal mismatch (2023 vs 2024)	Escalate
+2	Future graduation (2025)	Escalate
+3	Backlog cleared after graduation year	Escalate
+4	Applied before graduation completed	Escalate
+5	Clean timeline	Proceed
+9. 📊 Data Model
+type Decision = "proceed" | "reject" | "escalate";
+
+type RiskTag =
+  | "degree"
+  | "stream"
+  | "cgpa"
+  | "graduation"
+  | "university"
+  | "mismatch";
+
+type EvidenceItem = {
+  id: string;
+  label: string;
+  content: string;
+};
+
+type Scenario = {
+  id: string;
+  title: string;
+  alert: string;
+  difficulty: "easy" | "medium" | "hard";
+  visibleData: {
+    resume: string[];
+    portal: string[];
+  };
+  evidenceTokens: number;
+  evidence: EvidenceItem[];
+  correctRisks: RiskTag[];
+  correctDecision: Decision;
+  strongJustificationKeywords: string[];
+  misleadingClue: string;
+  ruleApplied: string;
+};
+10. ⚙️ Core Mechanics
+10.1 Evidence System
+Limited tokens per scenario
+Each reveal consumes 1 token
+Cannot exceed limit
+10.2 Risk Tagging
+
+Available tags:
+
+Degree
+Stream
+CGPA
+Graduation
+University
+Mismatch
+10.3 Decision System
+
+Mandatory selection:
+
+Proceed
+Reject
+Escalate
+Mandatory justification (text input)
+10.4 Scoring System
+Action	Points
+Correct decision	+10
+Correct risk tag	+5
+Wrong risk tag	-2
+Missed risk tag	-5
+Strong justification	+5
+Wrong approval	-10
+Wrong rejection	-8
+Unnecessary escalation	-5
+10.5 Risk Meter
+Action	Impact
+Wrong approval	+30
+Missed issue	+20
+Wrong rejection	+10
+Unnecessary escalation	+8
+Levels:
+0–25 → Green
+26–60 → Yellow
+61+ → Red (Audit Risk)
+11. 🖥️ UI Requirements
+Layout
+Top Bar
+Game title
+Scenario number
+Score
+Risk meter
+Left Panel
+Resume data
+Portal data
+Right Panel
+Evidence tokens
+Evidence reveal buttons
+Revealed data
+Bottom Panel
+Risk tags (multi-select)
+Decision buttons
+Justification input
+Submit button
+Feedback Modal
+Correct decision
+User decision
+Correct risks
+Missed risks
+Misleading clue
+Rule applied
+Score update
+Risk update
+12. 📈 Final Results Screen
+Displays:
+Total score
+Accuracy %
+Risk behavior type:
+Risky
+Over-cautious
+Balanced
+Logic:
+Accuracy
+
+correct decisions / total scenarios
+
+Risk Behavior
+Risky: Risk meter > 60 OR 2+ wrong approvals
+Over-cautious: 2+ unnecessary escalations
+Balanced: Otherwise
+Weak Areas
+
+Based on missed risk tags:
+
+Graduation
+Degree
+CGPA
+University
+
+Top 2 categories shown
+
+13. ✅ Acceptance Criteria
+User can complete all 5 scenarios
+Evidence tokens limit enforced
+Risk tagging works correctly
+Decision required before submission
+Justification required
+Feedback shown after each case
+Score updates correctly
+Risk meter updates correctly
+Final summary generated
+14. 🧪 Testing Requirements
+Validate scoring logic across all scenarios
+Validate risk meter thresholds
+Validate edge cases:
+No risks selected
+All risks selected
+No evidence used
+All evidence used
+15. 🚀 Tech Requirements
+Stack
+React + TypeScript
+No backend required (MVP)
+State managed locally
+File Structure
+src/
+  components/
+  data/
+  types/
+  utils/
+16. 📦 Deliverables
+Functional web-based game
+Scenario-driven gameplay
+Scoring + risk engine
+Final results dashboard
+README with setup instructions
+17. 🔮 Future Enhancements
+Add more games (Degree, CGPA, University)
+Add difficulty progression engine
+Add leaderboard
+Add trainer dashboard
+Add analytics tracking
+18. 🏁 Success Metrics
+≥80% completion rate
+Improvement in post-training accuracy
+Reduction in real-world screening errors
+Positive trainee feedback (engagement)

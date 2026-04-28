@@ -1,0 +1,173 @@
+// Education Audit Challenge — Final Game
+// Full simulation with evidence tokens, risk tagging, decisions, justification
+
+export const riskTags = [
+  { id: 'degree', label: 'Degree', icon: 'fa-scroll' },
+  { id: 'stream', label: 'Stream', icon: 'fa-code-branch' },
+  { id: 'cgpa', label: 'CGPA', icon: 'fa-chart-bar' },
+  { id: 'graduation', label: 'Graduation', icon: 'fa-calendar' },
+  { id: 'university', label: 'University', icon: 'fa-university' },
+  { id: 'mismatch', label: 'Mismatch', icon: 'fa-triangle-exclamation' },
+];
+
+export const auditScenarios = [
+  {
+    id: 'audit-1',
+    title: 'Case #ARL-2024-0471',
+    alert: 'New Candidate Alert',
+    difficulty: 'medium',
+    visibleData: {
+      resume: [
+        'Name: Priya Sharma',
+        'Degree: B.Tech in Computer Science',
+        'University: Delhi Technological University',
+        'Graduation: June 2023',
+        'CGPA: 8.2 / 10',
+      ],
+      portal: [
+        'Degree: B.Tech in Computer Science',
+        'University: Delhi Technological University',
+        'Expected Graduation: December 2024',
+        'CGPA: 8.2 / 10',
+      ],
+    },
+    evidenceTokens: 3,
+    evidence: [
+      { id: 'e1', label: 'University Records', content: 'Official records show degree conferred: December 2024 (semester delayed due to backlog).' },
+      { id: 'e2', label: 'Transcript', content: 'Transcript shows one backlog in Semester 6, cleared in supplementary exam December 2024.' },
+      { id: 'e3', label: 'Verification Call', content: 'University registrar confirms student is currently enrolled, not yet graduated.' },
+    ],
+    correctRisks: ['graduation', 'mismatch'],
+    correctDecision: 'escalate',
+    strongJustificationKeywords: ['mismatch', 'graduation date', 'resume vs portal', 'not yet graduated', 'conflicting'],
+    misleadingClue: 'The CGPA and degree type match perfectly, which might make you overlook the graduation date conflict.',
+    ruleApplied: 'When resume and portal graduation dates conflict, escalate for verification. Never accept the earlier date without proof.',
+  },
+  {
+    id: 'audit-2',
+    title: 'Case #ARL-2024-0472',
+    alert: 'Investigation Required',
+    difficulty: 'hard',
+    visibleData: {
+      resume: [
+        'Name: James Rodriguez',
+        'Degree: Bachelor of Science in IT',
+        'University: Florida State University',
+        'Graduation: May 2025',
+        'GPA: 3.4 / 4.0',
+      ],
+      portal: [
+        'Degree: BS in Information Technology',
+        'University: Florida State University',
+        'Graduation: May 2025',
+        'GPA: 3.4 / 4.0',
+      ],
+    },
+    evidenceTokens: 2,
+    evidence: [
+      { id: 'e1', label: 'Academic Calendar', content: 'Florida State University spring semester ends in May 2025. Final results published June 2025.' },
+      { id: 'e2', label: 'Enrollment Status', content: 'Student is currently in final semester. Degree not yet conferred.' },
+      { id: 'e3', label: 'Department Note', content: 'Student is in good standing with no pending backlogs.' },
+    ],
+    correctRisks: ['graduation'],
+    correctDecision: 'escalate',
+    strongJustificationKeywords: ['future date', 'not yet graduated', '2025', 'pending', 'current student'],
+    misleadingClue: 'All data matches perfectly between resume and portal — the issue is the graduation date itself being in the future.',
+    ruleApplied: 'Future graduation dates must be escalated. A candidate who has not yet graduated cannot be processed as a graduate.',
+  },
+  {
+    id: 'audit-3',
+    title: 'Case #ARL-2024-0473',
+    alert: 'Potential Risk Detected',
+    difficulty: 'hard',
+    visibleData: {
+      resume: [
+        'Name: Ankit Verma',
+        'Degree: B.Tech in Mechanical Engineering',
+        'University: NIT Trichy',
+        'Graduation: May 2022',
+        'CGPA: 7.8 / 10',
+      ],
+      portal: [
+        'Degree: B.Tech in Mechanical Engineering',
+        'University: NIT Trichy',
+        'Graduation: May 2022',
+        'CGPA: 6.9 / 10',
+      ],
+    },
+    evidenceTokens: 3,
+    evidence: [
+      { id: 'e1', label: 'Transcript', content: 'Final CGPA on transcript: 6.9/10. The 7.8 appears to be from semester 6, not final.' },
+      { id: 'e2', label: 'Degree Check', content: 'B.Tech Mechanical Engineering does not qualify for CS/IT-specific roles without a CS minor.' },
+      { id: 'e3', label: 'Minor/Electives', content: 'No CS minor or relevant electives found in transcript.' },
+    ],
+    correctRisks: ['cgpa', 'mismatch', 'stream'],
+    correctDecision: 'escalate',
+    strongJustificationKeywords: ['CGPA mismatch', 'mechanical', 'not CS', 'stream mismatch', 'inflated CGPA'],
+    misleadingClue: 'NIT Trichy is a highly reputed institution, which might make you overlook the CGPA inflation and stream mismatch.',
+    ruleApplied: 'Multiple red flags (CGPA discrepancy + wrong stream) require escalation. Prestigious university does not bypass eligibility rules.',
+  },
+  {
+    id: 'audit-4',
+    title: 'Case #ARL-2024-0474',
+    alert: 'New Candidate Alert',
+    difficulty: 'easy',
+    visibleData: {
+      resume: [
+        'Name: Sarah Chen',
+        'Degree: M.Sc in Computer Science',
+        'University: University of British Columbia',
+        'Graduation: June 2023',
+        'GPA: 3.7 / 4.0',
+      ],
+      portal: [
+        'Degree: MSc Computer Science',
+        'University: University of British Columbia',
+        'Graduation: June 2023',
+        'GPA: 3.7 / 4.0',
+      ],
+    },
+    evidenceTokens: 2,
+    evidence: [
+      { id: 'e1', label: 'Accreditation', content: 'UBC is a top-ranked, fully accredited Canadian university.' },
+      { id: 'e2', label: 'Degree Verification', content: 'Degree conferred June 2023. All requirements completed. Clean academic record.' },
+    ],
+    correctRisks: [],
+    correctDecision: 'proceed',
+    strongJustificationKeywords: ['all checks pass', 'dates match', 'accredited', 'meets requirements', 'clean'],
+    misleadingClue: 'This is a clean profile. The trap is escalating or rejecting a perfectly valid candidate out of excessive caution.',
+    ruleApplied: 'When all verification checks pass — dates match, university accredited, degree relevant, CGPA sufficient — proceed.',
+  },
+  {
+    id: 'audit-5',
+    title: 'Case #ARL-2024-0475',
+    alert: 'Potential Risk Detected',
+    difficulty: 'hard',
+    visibleData: {
+      resume: [
+        'Name: Vikram Patel',
+        'Degree: BCA',
+        'University: Global Institute of Technology',
+        'Graduation: April 2022',
+        'CGPA: 8.5 / 10',
+      ],
+      portal: [
+        'Degree: BCA',
+        'University: Global Institute of Technology',
+        'Graduation: April 2022',
+        'CGPA: 8.5 / 10',
+      ],
+    },
+    evidenceTokens: 3,
+    evidence: [
+      { id: 'e1', label: 'UGC Database Check', content: '"Global Institute of Technology" — NOT FOUND in UGC recognized institutions list.' },
+      { id: 'e2', label: 'Web Search', content: 'University website is poorly maintained, no verifiable faculty or accreditation displayed.' },
+      { id: 'e3', label: 'Alumni Network', content: 'No LinkedIn alumni network found. No graduates from this institute appear in professional databases.' },
+    ],
+    correctRisks: ['university', 'degree'],
+    correctDecision: 'escalate',
+    strongJustificationKeywords: ['unrecognized', 'not in UGC', 'diploma mill', 'suspicious', 'no accreditation', 'fraudulent'],
+    misleadingClue: 'Everything matches between resume and portal, and the CGPA is impressive — but the university itself is the problem.',
+    ruleApplied: 'University verification is mandatory. A perfect profile from an unrecognized institution is worse than an imperfect profile from a verified one.',
+  },
+];
