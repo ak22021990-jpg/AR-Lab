@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip -l \"C:\\\\Users\\\\anoop\\\\OneDrive\\\\Desktop\\\\AMZ5\\\\dataset\\\\Resume.zip\")",
+      "Bash(python3:*)",
+      "Bash(npx vite:*)",
+      "Bash(SRC=\"C:/Users/anoop/OneDrive/Desktop/AMZ3/src/assets\" DST=\"C:/Users/anoop/OneDrive/Desktop/AMZ3/public/assets\")",
+      "Bash(cp \"$SRC/illustrations/eligibility_basics.png\" \"$DST/illustrations/eligibility-basics.png\")",
+      "Bash(cp \"$SRC/illustrations/degree_detective.png\" \"$DST/illustrations/degree-detective.png\")",
+      "Bash(cp \"$SRC/illustrations/graduation_gate.png\" \"$DST/illustrations/graduation-gate.png\")",
+      "Bash(cp \"$SRC/illustrations/university_validator.png\" \"$DST/illustrations/university-validator.png\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}

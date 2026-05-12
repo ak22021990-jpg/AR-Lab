@@ -1,4 +1,29 @@
+import { useState, useEffect } from 'react';
 import { getRiskBehavior, getWeakAreas, getRiskLevel } from '../utils/scoring';
+import Mascot from './Mascot';
+
+function AnimatedScoreCounter({ value, color = 'var(--color-amz-orange)' }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = parseInt(value);
+    if (start === end) return;
+
+    let totalMiliseconds = 1500;
+    let incrementTime = (totalMiliseconds / end);
+
+    let timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <span style={{ color }}>{count}</span>;
+}
 
 export default function Results({ miniGameResults, auditResults, auditScore, riskMeter, onRestart }) {
   const miniTotal = Object.values(miniGameResults).reduce((sum, r) => sum + r.score, 0);
@@ -8,39 +33,48 @@ export default function Results({ miniGameResults, auditResults, auditScore, ris
   const weakAreas = getWeakAreas(auditResults);
   const risk = getRiskLevel(riskMeter);
 
+  const roleConfusionCount = auditResults.filter(r => r.isRoleConfusion).length;
+  const roleAccuracy = Math.round(((auditResults.length - roleConfusionCount) / auditResults.length) * 100);
+
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in-up">
+    <div className="max-w-5xl mx-auto animate-fade-in-up">
       {/* Header */}
-      <div className="text-center mb-10">
-        <div className="w-20 h-20 rounded-3xl bg-amz-orange/10 border border-amz-orange/30 flex items-center justify-center mx-auto mb-4">
-          <i className="fa-solid fa-file-shield text-amz-orange text-3xl"></i>
+      <div className="text-center mb-10 relative">
+        {/* Mascot Reaction */}
+        <div className="absolute top-0 right-0 hidden lg:block">
+          <Mascot 
+            state={behavior.type === 'Expert' ? 'excited' : (behavior.type === 'Over-Cautious' ? 'thinking' : 'concerned')} 
+            message={behavior.type === 'Expert' ? "Incredible work! You're ready for the floor." : (behavior.type === 'Over-Cautious' ? "You're safe, but maybe a bit too slow." : "We need to be more careful about these risks.")}
+            size="lg"
+            position="left"
+          />
+        </div>
+        <div className="w-20 h-20 rounded-3xl bg-amz-orange/10 border border-amz-orange/30 flex items-center justify-center mx-auto mb-4 group hover:scale-110 transition-transform duration-500">
+          <i className="fa-solid fa-file-shield text-amz-orange text-3xl shadow-glow-orange group-hover:animate-pulse"></i>
         </div>
         <h2 className="text-4xl font-outfit font-black mb-2">Performance Report</h2>
-        <p className="text-gray-400">Academic Risk Lab: Breach Prevention — Final Assessment</p>
+        <p className="text-gray-400 font-medium">Academic Risk Lab: Breach Prevention — Final Assessment</p>
       </div>
 
       {/* Score Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="glass-card-elevated p-5 text-center animate-fade-in-up delay-100">
-          <div className="text-3xl font-outfit font-black text-amz-orange mb-1">{totalScore}</div>
-          <div className="text-xs text-gray-500 uppercase tracking-wider">Total Score</div>
-        </div>
-        <div className="glass-card-elevated p-5 text-center animate-fade-in-up delay-200">
-          <div className="text-3xl font-outfit font-black text-cyber-cyan mb-1">{auditAccuracy}/{auditResults.length}</div>
-          <div className="text-xs text-gray-500 uppercase tracking-wider">Audit Accuracy</div>
-        </div>
-        <div className="glass-card-elevated p-5 text-center animate-fade-in-up delay-300">
-          <div className="text-3xl font-outfit font-black mb-1" style={{ color: behavior.color }}>
-            <i className={`fa-solid ${behavior.icon}`}></i>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+        {[
+          { label: 'Total Score', value: totalScore, color: 'text-amz-orange', icon: 'fa-bolt', animated: true },
+          { label: 'Audit Accuracy', value: `${auditAccuracy}/${auditResults.length}`, color: 'text-cyber-cyan', icon: 'fa-bullseye' },
+          { label: 'Role Accuracy', value: `${roleAccuracy}%`, color: 'text-purple-400', icon: 'fa-user-check' },
+          { label: 'Behavior', value: behavior.type, color: '', customColor: behavior.color, icon: behavior.icon },
+          { label: 'Risk Level', value: `${riskMeter}%`, color: '', customColor: risk.color === 'green' ? '#22c55e' : risk.color === 'yellow' ? '#f59e0b' : '#ef4444', icon: 'fa-gauge-high' },
+        ].map((card, i) => (
+          <div key={i} className="glass-card-elevated p-6 text-center animate-fade-in-up border-white/5 hover:border-white/10 transition-colors" style={{ animationDelay: `${(i + 1) * 100}ms` }}>
+            <div className="text-gray-500 mb-3">
+               <i className={`fa-solid ${card.icon} text-sm opacity-50`}></i>
+            </div>
+            <div className={`text-3xl font-outfit font-black mb-1 ${card.color}`} style={card.customColor ? { color: card.customColor } : {}}>
+              {card.animated ? <AnimatedScoreCounter value={card.value} /> : card.value}
+            </div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">{card.label}</div>
           </div>
-          <div className="text-xs text-gray-500 uppercase tracking-wider">{behavior.type}</div>
-        </div>
-        <div className="glass-card-elevated p-5 text-center animate-fade-in-up delay-400">
-          <div className="text-3xl font-outfit font-black mb-1" style={{ color: risk.color === 'green' ? '#22c55e' : risk.color === 'yellow' ? '#f59e0b' : '#ef4444' }}>
-            {riskMeter}%
-          </div>
-          <div className="text-xs text-gray-500 uppercase tracking-wider">Risk Level</div>
-        </div>
+        ))}
       </div>
 
       {/* Behavior Analysis */}
@@ -86,6 +120,7 @@ export default function Results({ miniGameResults, auditResults, auditScore, ris
             <thead>
               <tr className="border-b border-white/5">
                 <th className="text-left py-3 px-3 text-gray-500 font-semibold">Case</th>
+                <th className="text-left py-3 px-3 text-gray-500 font-semibold">Role</th>
                 <th className="text-left py-3 px-3 text-gray-500 font-semibold">Your Decision</th>
                 <th className="text-left py-3 px-3 text-gray-500 font-semibold">Correct</th>
                 <th className="text-right py-3 px-3 text-gray-500 font-semibold">Score</th>
@@ -95,6 +130,11 @@ export default function Results({ miniGameResults, auditResults, auditScore, ris
               {auditResults.map((r, i) => (
                 <tr key={i} className="border-b border-white/3 hover:bg-white/[0.02]">
                   <td className="py-3 px-3 font-mono text-gray-400">#{i + 1}</td>
+                  <td className="py-3 px-3">
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${r.targetRole === 'sde' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'}`}>
+                      {r.targetRole === 'sde' ? 'SDE' : 'Warehouse'}
+                    </span>
+                  </td>
                   <td className="py-3 px-3">
                     <span className={`capitalize font-semibold ${r.userDecision === r.correctDecision ? 'text-risk-green' : 'text-risk-red'}`}>
                       {r.userDecision}

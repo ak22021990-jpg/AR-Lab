@@ -5,6 +5,7 @@ import 'animate.css';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import GameHub from './components/GameHub';
+import MiniGame from './components/MiniGame';
 import AuditGame from './components/AuditGame';
 import Results from './components/Results';
 
@@ -20,6 +21,9 @@ export default function App() {
   const [auditResults, setAuditResults] = useState([]);
   const [auditScore, setAuditScore] = useState(0);
   const [auditCompleted, setAuditCompleted] = useState(false);
+
+  const [activeRole, setActiveRole] = useState(null);
+  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(null);
 
   const auditUnlocked = Object.keys(completedGames).length >= miniGames.length;
   const activeGame = miniGames.find(g => g.id === activeGameId);
@@ -40,6 +44,13 @@ export default function App() {
     setScreen('game');
   };
 
+  const handleScenarioChange = (index, scenario) => {
+    setCurrentScenarioIndex(index);
+    if (scenario && scenario.targetRole) {
+      setActiveRole(scenario.targetRole);
+    }
+  };
+
   const handleMiniGameComplete = (results, score, risk) => {
     if (activeGameId) {
       setCompletedGames(prev => ({
@@ -54,6 +65,8 @@ export default function App() {
   const handleBackToHub = () => {
     setActiveGameId(null);
     setScreen('hub');
+    setActiveRole(null);
+    setCurrentScenarioIndex(null);
   };
 
   const handleStartAudit = () => {
@@ -66,6 +79,8 @@ export default function App() {
     setRiskMeter(risk);
     setAuditCompleted(true);
     setTotalScore(prev => prev + score);
+    setActiveRole(null);
+    setCurrentScenarioIndex(null);
     if (score > 0) triggerConfetti();
     setTimeout(() => setScreen('results'), 500);
   };
@@ -79,6 +94,8 @@ export default function App() {
     setAuditResults([]);
     setAuditScore(0);
     setAuditCompleted(false);
+    setActiveRole(null);
+    setCurrentScenarioIndex(null);
   };
 
   return (
@@ -86,9 +103,16 @@ export default function App() {
       <Header
         score={totalScore}
         riskMeter={riskMeter}
-        currentScenario={null}
-        totalScenarios={auditScenarios.length}
+        currentScenario={currentScenarioIndex}
+        totalScenarios={
+          screen === 'audit' 
+            ? auditScenarios.length 
+            : (screen === 'game' && activeGame) 
+              ? (activeGame.format === 'mcq' ? 5 : activeGame.scenarios.length)
+              : 0
+        }
         screen={screen}
+        activeRole={activeRole}
       />
 
       <main className="flex-1 p-4 md:p-8">
@@ -106,20 +130,34 @@ export default function App() {
         )}
 
         {screen === 'game' && activeGame && (
-          <AuditGame
-            key={activeGameId}
-            scenarios={activeGame.scenarios}
-            onComplete={handleMiniGameComplete}
-            onBack={handleBackToHub}
-          />
+          activeGame.format === 'mcq' ? (
+            <MiniGame
+              key={activeGameId}
+              game={activeGame}
+              onComplete={handleMiniGameComplete}
+              onBack={handleBackToHub}
+              onScenarioChange={handleScenarioChange}
+            />
+          ) : (
+            <AuditGame
+              key={activeGameId}
+              gameId={activeGameId}
+              scenarios={activeGame.scenarios}
+              onComplete={handleMiniGameComplete}
+              onBack={handleBackToHub}
+              onScenarioChange={handleScenarioChange}
+            />
+          )
         )}
 
         {screen === 'audit' && (
           <AuditGame
             key="audit-final"
+            gameId="audit-final"
             scenarios={auditScenarios}
             onComplete={handleAuditComplete}
             onBack={handleBackToHub}
+            onScenarioChange={handleScenarioChange}
           />
         )}
 

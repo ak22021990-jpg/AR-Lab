@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import ContextCard from './ContextCard';
+import ProgressiveTimer from './ProgressiveTimer';
+import { contextCards } from '../data/contextCards';
+import RoleBadge from './RoleBadge';
 
-export default function MiniGame({ game, onComplete, onBack }) {
+export default function MiniGame({ game, onComplete, onBack, onScenarioChange }) {
   const [items] = useState(() => {
     const shuffled = [...game.items].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 5);
@@ -13,13 +17,52 @@ export default function MiniGame({ game, onComplete, onBack }) {
   const [feedback, setFeedback] = useState(null);
   const [finished, setFinished] = useState(false);
 
+  useEffect(() => {
+    if (onScenarioChange) {
+      onScenarioChange(currentIndex, items[currentIndex]);
+    }
+  }, [currentIndex, onScenarioChange, items]);
+  
+  // Phase 2: Context Card & Timer State
+  const [showContext, setShowContext] = useState(true);
+  const [timerActive, setTimerActive] = useState(false);
+
   const current = items[currentIndex];
   const progress = ((currentIndex + (answered ? 1 : 0)) / items.length) * 100;
+  const cardData = contextCards[game.id];
 
-  const handleSubmit = () => {
-    if (selectedOption === null || answered) return;
+  const getInitialDuration = () => {
+    if (game.id === 'eligibility-basics') return 120;
+    if (game.id === 'degree-detective') return 100;
+    if (game.id === 'graduation-gate') return 90;
+    if (game.id === 'university-validator') return 80;
+    if (game.id === 'education-audit') return 60;
+    return 60;
+  };
+
+  const initialDuration = getInitialDuration();
+
+  const handleStartGame = () => {
+    setShowContext(false);
+    setTimerActive(true);
+  };
+
+  const handleTimeUp = () => {
+    if (!answered) {
+      // Auto-submit as wrong if time runs out
+      handleAnswer(null);
+    }
+  };
+
+  const handleAnswer = (idx) => {
+    if (answered) return;
+    
+    const finalIdx = idx === null ? -1 : idx;
+    setSelectedOption(finalIdx);
     setAnswered(true);
-    const isCorrect = selectedOption === current.answer;
+    setTimerActive(false);
+    
+    const isCorrect = finalIdx === current.answer;
 
     if (isCorrect) {
       const newStreak = streak + 1;
@@ -36,7 +79,9 @@ export default function MiniGame({ game, onComplete, onBack }) {
       const correctTitle = current.options[current.answer].title;
       setFeedback({
         type: 'error',
-        message: `${current.explanation} Correct: ${correctTitle}`,
+        message: finalIdx === -1 
+          ? `Time expired! ${current.explanation} Correct: ${correctTitle}`
+          : `${current.explanation} Correct: ${correctTitle}`,
         points: '+0',
       });
     }
@@ -45,19 +90,24 @@ export default function MiniGame({ game, onComplete, onBack }) {
   const handleNext = () => {
     if (currentIndex >= items.length - 1) {
       setFinished(true);
-      onComplete(game.id, { score, total: items.length });
+      onComplete(items, score, 0); // Mini-games don't impact risk meter as much in this simplified version
     } else {
       setCurrentIndex(prev => prev + 1);
       setSelectedOption(null);
       setAnswered(false);
       setFeedback(null);
+      setTimerActive(true);
     }
   };
+
+  if (showContext && cardData) {
+    return <ContextCard cardData={cardData} onStart={handleStartGame} />;
+  }
 
   if (finished) {
     const passed = score >= 30;
     return (
-      <div className="max-w-3xl mx-auto animate-scale-in">
+      <div className="max-w-xl mx-auto animate-scale-in py-20">
         <div className="glass-card-elevated p-10 text-center">
           <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center border-2 ${passed ? 'bg-risk-green/10 border-risk-green' : 'bg-risk-red/10 border-risk-red'}`}>
             <i className={`fa-solid ${passed ? 'fa-check' : 'fa-xmark'} text-3xl ${passed ? 'text-risk-green' : 'text-risk-red'}`}></i>
@@ -75,7 +125,7 @@ export default function MiniGame({ game, onComplete, onBack }) {
               <i className="fa-solid fa-arrow-left"></i> Back to Labs
             </button>
             {!passed && (
-              <button onClick={() => { setCurrentIndex(0); setScore(0); setStreak(0); setFinished(false); setFeedback(null); setAnswered(false); setSelectedOption(null); }} className="btn-primary">
+              <button onClick={() => { setCurrentIndex(0); setScore(0); setStreak(0); setFinished(false); setFeedback(null); setAnswered(false); setSelectedOption(null); setTimerActive(true); }} className="btn-primary">
                 <i className="fa-solid fa-rotate-right"></i> Retry
               </button>
             )}
@@ -89,7 +139,7 @@ export default function MiniGame({ game, onComplete, onBack }) {
     <div className="max-w-3xl mx-auto animate-fade-in-up">
       <div className="glass-card-elevated p-8">
         {/* Top bar */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex gap-2">
             <span className="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider font-mono" style={{ background: `${game.color}15`, color: game.color, border: `1px solid ${game.color}30` }}>
               {game.badge}
@@ -98,11 +148,14 @@ export default function MiniGame({ game, onComplete, onBack }) {
               Q{currentIndex + 1}/{items.length}
             </span>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-500 mb-1">Score: <span className="text-white font-bold">{score}</span></div>
-            <div className="h-1.5 w-32 bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-amz-orange rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
-            </div>
+          
+          <div className="w-full md:w-48">
+            <ProgressiveTimer 
+              duration={initialDuration} 
+              onTimeUp={handleTimeUp} 
+              isActive={timerActive} 
+              key={currentIndex}
+            />
           </div>
         </div>
 
@@ -114,6 +167,9 @@ export default function MiniGame({ game, onComplete, onBack }) {
             </span>
           </div>
         )}
+
+        {/* Role Badge */}
+        {current.targetRole && <RoleBadge role={current.targetRole} />}
 
         {/* Question */}
         <h3 className="text-2xl font-outfit font-bold mb-3 leading-snug">{current.question}</h3>
@@ -128,15 +184,17 @@ export default function MiniGame({ game, onComplete, onBack }) {
             let classes = 'option-card';
             if (answered) classes += ' locked';
             if (isSelected && !answered) classes += ' selected';
+            if (answered && isCorrectAnswer && isSelected) classes += ' animate-celebration-burst';
+            if (answered && isSelected && !isCorrectAnswer) classes += ' animate-shake';
             if (answered && isCorrectAnswer) classes += ' correct';
             if (answered && isSelected && !isCorrectAnswer) classes += ' wrong';
 
             return (
               <div
                 key={idx}
-                className={`${classes} animate-fade-in-up`}
+                className={`${classes} animate-slide-up-bounce`}
                 style={{ animationDelay: `${idx * 80}ms` }}
-                onClick={() => !answered && setSelectedOption(idx)}
+                onClick={() => !answered && handleAnswer(idx)}
               >
                 <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${
                   isSelected ? 'border-amz-orange' : 'border-white/20'
@@ -171,17 +229,20 @@ export default function MiniGame({ game, onComplete, onBack }) {
 
         {/* Actions */}
         <div className="flex gap-4">
-          <button onClick={handleSubmit} disabled={selectedOption === null || answered} className="btn-primary flex-1">
-            <i className="fa-solid fa-lock"></i> Lock Answer
-          </button>
-          <button onClick={handleNext} disabled={!answered} className="btn-secondary flex-1">
-            <i className="fa-solid fa-forward-step"></i> {currentIndex >= items.length - 1 ? 'Finish Lab' : 'Next Case'}
-          </button>
+          {!answered ? (
+            <button onClick={() => handleAnswer(selectedOption)} disabled={selectedOption === null} className="btn-primary flex-1 py-4">
+              <i className="fa-solid fa-lock"></i> Lock Answer
+            </button>
+          ) : (
+            <button onClick={handleNext} className="btn-primary flex-1 py-4">
+              <i className="fa-solid fa-forward-step"></i> {currentIndex >= items.length - 1 ? 'Finish Lab' : 'Next Case'}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Back button */}
-      <button onClick={onBack} className="mt-4 text-gray-500 hover:text-gray-300 transition-colors text-sm flex items-center gap-2 mx-auto">
+      <button onClick={onBack} className="mt-6 text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto">
         <i className="fa-solid fa-arrow-left"></i> Exit to Labs
       </button>
     </div>

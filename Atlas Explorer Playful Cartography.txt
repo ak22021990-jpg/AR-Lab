@@ -1,0 +1,207 @@
+Atlas Explorer: Playful Cartography Redesign                                                                                                            │
+     │                                                                                                                                                         │
+     │ Context                                                                                                                                                 │
+     │                                                                                                                                                         │
+     │ The current "Modern Geographic" design feels like a corporate assessment tool — flat, muted, and boring. The goal is to transform it into an exciting,  │
+     │ game-like experience with Playful Cartography energy (Duolingo/Kahoot vibes) while keeping it appropriate for a mixed-age training context. Key         │
+     │ priorities: animations, sound cues, and progress/unlock visuals.                                                                                        │
+     │                                                                                                                                                         │
+     │ ---                                                                                                                                                     │
+     │ Assets to Download (Free Sources)                                                                                                                       │
+     │                                                                                                                                                         │
+     │ Fonts                                                                                                                                                   │
+     │                                                                                                                                                         │
+     │ - Nunito (display/headings) — https://fonts.google.com/specimen/Nunito (weights: 700, 800, 900)                                                         │
+     │ - Keep Inter for body/UI text (already loaded)                                                                                                          │
+     │                                                                                                                                                         │
+     │ Sound Effects (pick ~9 short clips)                                                                                                                     │
+     │                                                                                                                                                         │
+     │ ┌────────────────────┬────────────────┬───────────────────────────────────────────────────────────────────┐                                             │
+     │ │       Sound        │      Use       │                              Source                               │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Bright chime       │ Correct answer │ Kenney Interface Sounds (CC0) — kenney.nl/assets/interface-sounds │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Low thud/buzz      │ Wrong answer   │ Same pack                                                         │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Ascending notes    │ Streak (3+)    │ Same pack                                                         │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Celebratory jingle │ Level passed   │ Mixkit — mixkit.co/free-sound-effects/game/                       │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Descending notes   │ Level failed   │ Mixkit                                                            │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Clock tick (loop)  │ Timer warning  │ Kenney                                                            │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Soft pop           │ Button click   │ Kenney                                                            │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Sparkle ding       │ Star earned    │ Mixkit                                                            │                                             │
+     │ ├────────────────────┼────────────────┼───────────────────────────────────────────────────────────────────┤                                             │
+     │ │ Fanfare            │ Badge unlocked │ Mixkit                                                            │                                             │
+     │ └────────────────────┴────────────────┴───────────────────────────────────────────────────────────────────┘                                             │
+     │                                                                                                                                                         │
+     │ Place all in a new sfx/ folder as MP3 files (keep each under 50KB).                                                                                     │
+     │                                                                                                                                                         │
+     │ Icons                                                                                                                                                   │
+     │                                                                                                                                                         │
+     │ - Phosphor Icons — phosphoricons.com (MIT license) — for lock, star, compass, sound toggle, trophy, map-pin icons                                       │
+     │ - Can use as inline SVGs or icon font                                                                                                                   │
+     │                                                                                                                                                         │
+     │ Background Patterns (optional, can do CSS-only)                                                                                                         │
+     │                                                                                                                                                         │
+     │ - Hero Patterns — heropatterns.com — topographic/wave SVG patterns                                                                                      │
+     │ - SVG Backgrounds — svgbackgrounds.com — customizable                                                                                                   │
+     │                                                                                                                                                         │
+     │ Illustrations (optional for journey map)                                                                                                                │
+     │                                                                                                                                                         │
+     │ - Storyset — storyset.com — geography-themed illustrated scenes (free with attribution)                                                                 │
+     │                                                                                                                                                         │
+     │ Lottie Animations (from LottieFiles — lottiefiles.com/free-animations)                                                                                  │
+     │                                                                                                                                                         │
+     │ Place in assets/lottie/ as .json files:                                                                                                                 │
+     │                                                                                                                                                         │
+     │ ┌────────────────────────────────────┬──────────────────┬──────────────────────────────────────┐                                                        │
+     │ │            Search term             │    File name     │             Use in game              │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "spinning globe" or "earth rotate" │ globe.json       │ Landing page hero decoration         │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "paper plane" or "airplane flying" │ airplane.json    │ Page transition between levels       │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "flag plant" or "waving flag"      │ flag-plant.json  │ Level completed celebration          │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "confetti celebration"             │ confetti.json    │ Pass interstitial                    │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "star burst" or "stars explosion"  │ star-burst.json  │ Star earned moment                   │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "trophy gold"                      │ trophy.json      │ Results screen (all levels complete) │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "streak fire" or "flame loop"      │ fire-streak.json │ Hot streak indicator (3+)            │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "level up" or "upgrade"            │ level-up.json    │ Advancing to next level              │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "countdown timer"                  │ timer.json       │ Timer running low urgency            │                                                        │
+     │ ├────────────────────────────────────┼──────────────────┼──────────────────────────────────────┤                                                        │
+     │ │ "checkmark success"                │ checkmark.json   │ Correct answer feedback              │                                                        │
+     │ └────────────────────────────────────┴──────────────────┴──────────────────────────────────────┘                                                        │
+     │                                                                                                                                                         │
+     │ Render using lightweight @lottiefiles/lottie-player web component (~50KB).                                                                              │
+     │                                                                                                                                                         │
+     │ SVG Decorations (from SVGRepo — svgrepo.com, free)                                                                                                      │
+     │                                                                                                                                                         │
+     │ Place in assets/svg/:                                                                                                                                   │
+     │                                                                                                                                                         │
+     │ ┌─────────────────────────────────┬───────────────────┬──────────────────────────────────────┐                                                          │
+     │ │           Search term           │     File name     │                 Use                  │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "compass rose" (ornate/vintage) │ compass-rose.svg  │ Journey map decoration               │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "dotted path" or "dashed trail" │ dotted-trail.svg  │ Connect level waypoints              │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "anchor" (nautical)             │ anchor.svg        │ Code Drop (water) theme decoration   │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "cactus"                        │ cactus.svg        │ Pin Rush (desert) theme decoration   │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "pine tree"                     │ pine-tree.svg     │ City Stack (forest) theme decoration │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "ribbon banner"                 │ ribbon-banner.svg │ Score/title decoration on results    │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "scroll parchment"              │ scroll.svg        │ Intro instruction panels             │                                                          │
+     │ ├─────────────────────────────────┼───────────────────┼──────────────────────────────────────┤                                                          │
+     │ │ "map pin" or "location marker"  │ map-pins.svg      │ Journey map waypoints                │                                                          │
+     │ └─────────────────────────────────┴───────────────────┴──────────────────────────────────────┘                                                          │
+     │                                                                                                                                                         │
+     │ ---                                                                                                                                                     │
+     │ Implementation Plan                                                                                                                                     │
+     │                                                                                                                                                         │
+     │ Phase 1: Color Palette + Typography (Highest impact)                                                                                                    │
+     │                                                                                                                                                         │
+     │ Files: css/styles.css, css/geo.css                                                                                                                      │
+     │                                                                                                                                                         │
+     │ Replace muted terrain tones with vibrant palette:                                                                                                       │
+     │ Primary:       #FF6B35 (warm coral-orange)                                                                                                              │
+     │ Water accent:  #06B6D4 (electric cyan) — was #4A7C6F                                                                                                    │
+     │ Desert accent: #F59E0B (golden amber) — was #C4883A                                                                                                     │
+     │ Forest accent: #10B981 (emerald green) — was #3D6B3A                                                                                                    │
+     │ Success:       #22C55E                                                                                                                                  │
+     │ Error:         #EF4444                                                                                                                                  │
+     │ Streak:        #8B5CF6 (purple)                                                                                                                         │
+     │ XP Gold:       #FBBF24                                                                                                                                  │
+     │                                                                                                                                                         │
+     │ Add Nunito for headings (font-weight: 800-900). Backgrounds get subtle gradient mesh instead of flat white.                                             │
+     │                                                                                                                                                         │
+     │ Phase 2: Component Shape + Depth                                                                                                                        │
+     │                                                                                                                                                         │
+     │ Files: css/geo.css                                                                                                                                      │
+     │                                                                                                                                                         │
+     │ - Cards/panels: border-radius: 20px, bottom shadow for 3D depth                                                                                         │
+     │ - Buttons: Chunky 3D style (4px bottom shadow, press-down on click, min-height 52px)                                                                    │
+     │ - Progress bar: Rounded pill shape with gradient fill + bounce easing                                                                                   │
+     │ - Input fields: Larger, glow ring on focus using terrain accent                                                                                         │
+     │                                                                                                                                                         │
+     │ Phase 3: Animations + Micro-interactions                                                                                                                │
+     │                                                                                                                                                         │
+     │ Files: css/geo.css, js/ui-effects.js                                                                                                                    │
+     │                                                                                                                                                         │
+     │ - Page transition: Full-screen color slide wipe (terrain accent colored)                                                                                │
+     │ - Element entrances: .pop-in, .slide-up, .bounce-in utility classes                                                                                     │
+     │ - Score popup: "+100" floats up and fades                                                                                                               │
+     │ - Timer urgency: Pulsing fill bar + red edge vignette at <10%                                                                                           │
+     │ - Streak: Purple glow badge with bounce-in                                                                                                              │
+     │ - Buttons: Scale 0.95 on active, spring-back                                                                                                            │
+     │                                                                                                                                                         │
+     │ Phase 4: Sound Design                                                                                                                                   │
+     │                                                                                                                                                         │
+     │ Files: New js/audio.js, integrate into js/main.js + game modules                                                                                        │
+     │                                                                                                                                                         │
+     │ - Web Audio API with lazy-loaded buffer cache                                                                                                           │
+     │ - Mute toggle in topbar (persisted to localStorage)                                                                                                     │
+     │ - Wire sounds to: correct, wrong, streak, pass, fail, tick, click, star, badge                                                                          │
+     │                                                                                                                                                         │
+     │ Phase 5: Per-Game Polish                                                                                                                                │
+     │                                                                                                                                                         │
+     │ Files: js/crack-the-code.js, js/pin-it.js, js/city-sorter.js, css/geo.css                                                                               │
+     │                                                                                                                                                         │
+     │ - Code Drop: Falling blocks glow + rotation, shatter on miss, cyan pulse input                                                                          │
+     │ - Pin Rush: Map regions lift on hover with gold glow, stamp checkmark on correct, bouncing callout target label                                         │
+     │ - City Stack: Ticket-style cards with torn edge, lift+scale on drag, bounce-back on wrong, pulsing drop zones                                           │
+     │                                                                                                                                                         │
+     │ Phase 6: Journey Map + Unlock Ceremony                                                                                                                  │
+     │                                                                                                                                                         │
+     │ Files: js/main.js (renderIntro), css/geo.css                                                                                                            │
+     │                                                                                                                                                         │
+     │ - Replace hub-map with illustrated trail/island chain (3 waypoints)                                                                                     │
+     │ - Locked/active/completed states with icons + glow                                                                                                      │
+     │ - Badge unlock: Full-screen modal with blur backdrop, badge spins in with scale animation                                                               │
+     │ - Star particles burst outward on earn                                                                                                                  │
+     │                                                                                                                                                         │
+     │ ---                                                                                                                                                     │
+     │ Key Technical Decisions                                                                                                                                 │
+     │                                                                                                                                                         │
+     │ - No new frameworks — all vanilla CSS + JS                                                                                                              │
+     │ - Keep data-terrain system — just swap accent color values                                                                                              │
+     │ - CSS animations preferred over JS (performance)                                                                                                        │
+     │ - Lottie for complex animations — @lottiefiles/lottie-player web component (CDN, ~50KB)                                                                 │
+     │ - Respect prefers-reduced-motion — already has media query in geo.css                                                                                   │
+     │ - New files: js/audio.js + sfx/ + assets/lottie/ + assets/svg/                                                                                          │
+     │ - Everything else: Modifications to existing CSS/JS files                                                                                               │
+     │                                                                                                                                                         │
+     │ Critical Files to Modify                                                                                                                                │
+     │                                                                                                                                                         │
+     │ 1. css/styles.css — :root variables (lines 1-42)                                                                                                        │
+     │ 2. css/geo.css — Theme, components, animations (primary target)                                                                                         │
+     │ 3. js/ui-effects.js — Enhanced animation functions                                                                                                      │
+     │ 4. js/main.js — Audio integration, transition triggers                                                                                                  │
+     │ 5. js/crack-the-code.js — Code Drop visual polish                                                                                                       │
+     │ 6. js/pin-it.js — Pin Rush map interactions                                                                                                             │
+     │ 7. js/city-sorter.js — City Stack drag polish                                                                                                           │
+     │                                                                                                                                                         │
+     │ Verification                                                                                                                                            │
+     │                                                                                                                                                         │
+     │ 1. Open index.html — landing page should feel vibrant with new colors/rounded components                                                                │
+     │ 2. Start a game — transitions should animate smoothly between screens                                                                                   │
+     │ 3. Play Code Drop — falling blocks should glow, correct/wrong should have distinct animations + sounds                                                  │
+     │ 4. Play Pin Rush — map hover/click should feel alive with golden highlights                                                                             │
+     │ 5. Play City Stack — drag should feel physical with shadow lift + bounce                                                                                │
+     │ 6. Complete a level — star burst + score animation + sound                                                                                              │
+     │ 7. Earn a badge — full ceremony modal                                                                                                                   │
+     │ 8. Check with prefers-reduced-motion enabled — all animations disabled gracefully                                                                       │
+     │ 9. Test mute toggle — persists across page reload                                                                                                       │
+     ╰───────────────────────────────────────────────────────────────

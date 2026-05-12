@@ -1,368 +1,490 @@
-// 5 Investigation Games — each with 3 candidate scenarios
-// Same simulation format: resume/portal data, evidence tokens, risk tags, decision, justification
+// Day 3: Education & Eligibility Games
+// Revised structure with 5 training labs + 1 final audit
 
 export const miniGames = [
   {
-    id: 'degree-sorter',
-    title: 'Degree Sorter',
-    icon: 'fa-graduation-cap',
-    description: 'Investigate candidate degree eligibility and apply CS qualification rules',
-    badge: 'Degree Intel',
+    id: 'eligibility-basics',
+    title: 'Eligibility Basics',
+    format: 'mcq',
+    icon: 'fa-lightbulb',
+    illustration: '/assets/illustrations/eligibility-basics.png',
+    badge: 'Basics',
     color: '#FF9900',
+    description: 'Learn the fundamental "Go/No-Go" rules of candidate eligibility.',
+    completionMessage: 'You have mastered the eligibility fundamentals!',
+    items: [
+      {
+        question: "A candidate for an SDE role graduated in 2019 but the role requires graduation between 2022-2025. What do you do?",
+        context: "SDE roles have strict graduation windows. Use the SDE rule set.",
+        options: [
+          { title: "Proceed", detail: "Accept them anyway if they have good experience." },
+          { title: "Reject", detail: "They do not meet the graduation year requirement." }
+        ],
+        targetRole: 'sde',
+        answer: 1,
+        explanation: "Graduation ranges are hard requirements. If they fall outside the 2022-2025 window, they must be rejected."
+      },
+      {
+        question: "What does 'academic stream' mean when screening for technical roles?",
+        context: "Role-specific requirements often hinge on the 'stream' or field of study.",
+        options: [
+          { title: "The university's location", detail: "Where the candidate studied." },
+          { title: "The field of study", detail: "The major or specialization (e.g., CS, IT)." },
+          { title: "The candidate's GPA", detail: "Their academic performance." }
+        ],
+        targetRole: 'sde',
+        answer: 1,
+        explanation: "Academic stream refers to the field of study, such as Computer Science, Information Technology, or Mechanical Engineering."
+      },
+      {
+        question: "A Warehouse Manager candidate's CGPA is 5.5/10, but the minimum required is 6.0/10. Can they proceed?",
+        context: "Even for non-tech roles, performance thresholds are usually non-negotiable.",
+        options: [
+          { title: "Yes", detail: "If they have a great degree type." },
+          { title: "No", detail: "They are below the mandatory threshold." },
+          { title: "Only if they are from an IIT", detail: "Prestige can sometimes override grades." }
+        ],
+        targetRole: 'warehouse-manager',
+        answer: 1,
+        explanation: "CGPA thresholds are hard requirements. Even for Warehouse Manager roles, candidates must meet the minimum grade requirement."
+      },
+      {
+        question: "Which of these is the first thing you check when an application for a Warehouse role comes in?",
+        context: "Efficiency in screening comes from checking the most likely 'blockers' first.",
+        options: [
+          { title: "Resume formatting", detail: "Is the resume easy to read?" },
+          { title: "Eligibility fundamentals", detail: "Degree, Grad Year, and Stream." },
+          { title: "Candidate's hobbies", detail: "What they do in their free time." }
+        ],
+        targetRole: 'warehouse-manager',
+        answer: 1,
+        explanation: "Checking eligibility fundamentals first saves time. If they aren't eligible, there's no need to review the rest of the profile."
+      },
+      {
+        question: "A candidate has a B.Tech in Mechanical Engineering and no CS minor. They applied for an SDE role. Decision?",
+        context: "SDE roles require CS or IT related degrees. Mechanical is considered 'Non-CS'.",
+        options: [
+          { title: "Proceed", detail: "Mechanical engineers can also code." },
+          { title: "Reject", detail: "Wrong stream for a technical SDE role." }
+        ],
+        targetRole: 'sde',
+        answer: 1,
+        explanation: "For SDE roles, the degree must be CS or IT related. Mechanical Engineering without a CS minor is not eligible."
+      }
+    ]
+  },
+  {
+    id: 'degree-detective',
+    title: 'Degree Detective',
+    format: 'audit',
+    icon: 'fa-user-graduate',
+    illustration: '/assets/illustrations/degree-detective.png',
+    badge: 'Degrees',
+    color: '#00d4ff',
+    description: 'Identify valid tech degrees and master the "CS Rule".',
     completionMessage: 'You can now accurately validate degree eligibility.',
     scenarios: [
       {
-        id: 'ds-1',
-        title: 'Case #DEG-001',
-        alert: 'New Candidate Alert',
+        id: 'dd-1',
+        title: 'Case #DEG-101',
+        alert: 'New Application',
         difficulty: 'easy',
-        visibleData: {
-          resume: ['Name: Arun Mehta', 'Degree: B.Tech Computer Science', 'University: VIT Vellore', 'Graduation: May 2023', 'CGPA: 8.1/10'],
-          portal: ['Degree: B.Tech Computer Science', 'University: VIT Vellore', 'Graduation: May 2023', 'CGPA: 8.1/10'],
+        targetRole: 'sde',
+        templateStyle: 'modern',
+        resume: {
+          name: 'Rahul Khanna',
+          email: 'rahul.k@example.com',
+          phone: '+91 99887 76655',
+          address: 'Mumbai, Maharashtra',
+          careerObjective: 'Software enthusiast with B.Tech in IT.',
+          education: [
+            { institution: 'IIT Bombay', degree: 'B.Tech', field: 'Information Technology', graduationYear: '2023', result: '9.2', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['C++', 'Python', 'Data Structures'],
+          certifications: [],
+          languages: ['English', 'Hindi']
         },
-        evidenceTokens: 2,
+        portal: { degree: 'B.Tech IT', field: 'Information Technology', graduationYear: '2023', cgpa: '9.2' },
+        evidenceTokens: 1,
         evidence: [
-          { id: 'e1', label: 'Degree Certificate', content: 'Official certificate confirms B.Tech in Computer Science, conferred May 2023.' },
-          { id: 'e2', label: 'UGC Status', content: 'VIT Vellore is UGC-recognized with NAAC A++ accreditation.' },
+          { id: 'e1', label: 'Certificate', content: 'Official certificate confirms B.Tech in CS. All good.' }
         ],
         correctRisks: [],
         correctDecision: 'proceed',
-        strongJustificationKeywords: ['matches', 'recognized', 'CS degree', 'meets requirement', 'clean'],
-        misleadingClue: 'This is a clean profile. The trap is over-cautiously escalating a perfectly valid candidate.',
-        ruleApplied: 'When degree type matches, university is recognized, dates align, and CGPA meets minimum — proceed.',
+        strongJustificationKeywords: ['CS degree', 'matches', 'clean'],
+        misleadingClue: 'Everything is perfectly clean. Don\'t search for problems that aren\'t there!',
+        ruleApplied: 'B.Tech CS/IT is the gold standard for SDE eligibility. Proceed immediately.'
       },
       {
-        id: 'ds-2',
-        title: 'Case #DEG-002',
-        alert: 'Investigation Required',
+        id: 'dd-2',
+        title: 'Case #DEG-102',
+        alert: 'Check Specialization',
         difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: Sneha Gupta', 'Degree: B.Tech Electronics & Communication', 'University: NIT Warangal', 'Graduation: June 2022', 'CGPA: 7.6/10'],
-          portal: ['Degree: B.Tech ECE', 'University: NIT Warangal', 'Graduation: June 2022', 'CGPA: 7.6/10', 'Applied for: SDE Role (requires CS/IT degree)'],
+        targetRole: 'sde',
+        templateStyle: 'creative',
+        resume: {
+          name: 'Anjali Menon',
+          email: 'anjali.m@example.com',
+          phone: '+91 88776 65544',
+          address: 'Chennai, Tamil Nadu',
+          careerObjective: 'ECE graduate with a minor in Computer Science.',
+          education: [
+            { institution: 'NIT Trichy', degree: 'B.Tech', field: 'Electronics & Communication', graduationYear: '2022', result: '8.5', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Java', 'Embedded Systems', 'SQL'],
+          certifications: ['Certified CS Minor from NIT Trichy'],
+          languages: ['English', 'Tamil']
         },
-        evidenceTokens: 3,
+        portal: { degree: 'B.Tech ECE', field: 'Electronics', graduationYear: '2022', cgpa: '8.5' },
+        evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'Transcript', content: 'Shows 4 CS electives taken (Data Structures, Algorithms, DBMS, OS) totaling 16 credits.' },
-          { id: 'e2', label: 'CS Minor Check', content: 'NIT Warangal does NOT offer a formal CS minor for ECE students. These were open electives.' },
-          { id: 'e3', label: 'Policy Reference', content: 'CS Rule: ECE qualifies only with a verified CS minor (≥15 credits in formal minor program).' },
+          { id: 'e1', label: 'Transcript', content: 'Shows a formal CS Minor program completed with 18 credits in CS subjects.' },
+          { id: 'e2', label: 'Policy', content: 'ECE is valid ONLY with a formal CS Minor (min 15 credits).' }
+        ],
+        correctRisks: [],
+        correctDecision: 'proceed',
+        strongJustificationKeywords: ['formal minor', '18 credits', 'CS minor', 'eligible'],
+        misleadingClue: 'While it\'s ECE, the formal CS minor makes this candidate eligible for SDE roles.',
+        ruleApplied: 'ECE with a verified CS minor (15+ credits) satisfies the CS requirement for SDE roles.'
+      },
+      {
+        id: 'dd-3',
+        title: 'Case #DEG-103',
+        alert: 'Naming Conflict',
+        difficulty: 'hard',
+        targetRole: 'sde',
+        templateStyle: 'traditional',
+        resume: {
+          name: 'Vikram Singh',
+          email: 'vikram.s@example.com',
+          phone: '+91 77665 54433',
+          address: 'Delhi',
+          careerObjective: 'Experienced in business and tech.',
+          education: [
+            { institution: 'Delhi University', degree: 'B.Sc', field: 'Information Systems', graduationYear: '2021', result: '7.8', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Office 365', 'Basic Java'],
+          certifications: [],
+          languages: ['English', 'Hindi']
+        },
+        portal: { degree: 'B.Sc CS', field: 'Computer Science', graduationYear: '2021', cgpa: '7.8' },
+        evidenceTokens: 2,
+        evidence: [
+          { id: 'e1', label: 'Curriculum', content: 'Only 30% of credits are in programming/algorithms. Focus is on data management and office tools.' },
+          { id: 'e2', label: 'SOP Reference', content: 'Computer & Information Science (CIS) ≠ Computer Science (CS). CIS is typically invalid.' }
         ],
         correctRisks: ['stream'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['ECE', 'not CS', 'no formal minor', 'stream mismatch', 'electives not minor', 'CS rule'],
-        misleadingClue: 'The candidate took 16 CS credits which exceeds 15, but they are open electives — not a formal CS minor program.',
-        ruleApplied: 'ECE with CS electives ≠ ECE with CS minor. Only a formal minor program satisfies the CS rule.',
-      },
-      {
-        id: 'ds-3',
-        title: 'Case #DEG-003',
-        alert: 'Potential Risk Detected',
-        difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Rahul Joshi', 'Degree: BCA (Bachelor of Computer Applications)', 'University: Indore Institute of Technology', 'Graduation: April 2021', 'CGPA: 8.9/10'],
-          portal: ['Degree: BCA', 'University: Indore Institute of Technology', 'Graduation: April 2021', 'CGPA: 8.9/10'],
-        },
-        evidenceTokens: 3,
-        evidence: [
-          { id: 'e1', label: 'UGC Database', content: '"Indore Institute of Technology" — NOT FOUND in UGC recognized institutions list.' },
-          { id: 'e2', label: 'Web Research', content: 'Institute website shows no accreditation info. No verifiable alumni on LinkedIn.' },
-          { id: 'e3', label: 'Degree Verification', content: 'Third-party verification service reports: "Unable to verify — institution not in database."' },
-        ],
-        correctRisks: ['university', 'degree'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['unrecognized', 'not in UGC', 'cannot verify', 'institution', 'suspicious', 'accreditation'],
-        misleadingClue: 'BCA is a valid CS degree and the CGPA is excellent. The issue is the institution, not the degree type.',
-        ruleApplied: 'A valid degree from an unrecognized institution cannot be accepted. University verification is mandatory.',
-      },
-    ],
+        correctDecision: 'reject',
+        strongJustificationKeywords: ['CIS not CS', 'wrong stream', 'insufficient software credits'],
+        misleadingClue: 'The names look almost identical, but CIS is often not a software engineering degree.',
+        ruleApplied: 'Computer & Information Science is not equivalent to Computer Science for SDE roles. Reject due to stream mismatch.'
+      }
+    ]
   },
   {
     id: 'graduation-gate',
     title: 'Graduation Gate',
+    format: 'audit',
     icon: 'fa-calendar-check',
-    description: 'Validate graduation timelines, detect date conflicts between resume and portal',
-    badge: 'Timeline Analyst',
-    color: '#00d4ff',
+    illustration: '/assets/illustrations/graduation-gate.png',
+    badge: 'Timelines',
+    color: '#a855f7',
+    description: 'Spot conflicts between resume dates and application data.',
     completionMessage: 'You can now spot graduation timeline issues and data conflicts.',
     scenarios: [
       {
         id: 'gg-1',
-        title: 'Case #GRAD-001',
-        alert: 'New Candidate Alert',
+        title: 'Case #TIM-101',
+        alert: 'Date Mismatch',
         difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: Priya Nair', 'Degree: B.Tech IT', 'University: Anna University', 'Graduation: June 2023', 'CGPA: 7.2/10'],
-          portal: ['Degree: B.Tech IT', 'University: Anna University', 'Expected Graduation: December 2024', 'CGPA: 7.2/10'],
+        targetRole: 'sde',
+        templateStyle: 'modern',
+        resume: {
+          name: 'Ishaan Gupta',
+          email: 'ishaan.g@example.com',
+          phone: '+91 66554 43322',
+          address: 'Gurgaon',
+          careerObjective: 'CS graduate.',
+          education: [
+            { institution: 'NSUT Delhi', degree: 'B.E.', field: 'Computer Engineering', graduationYear: '2023', result: '8.0', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['React', 'Node.js'],
+          certifications: [],
+          languages: ['English']
         },
-        evidenceTokens: 3,
+        portal: { degree: 'B.E. CE', field: 'Computer Engineering', graduationYear: '2024', cgpa: '8.0' },
+        evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'University Records', content: 'Anna University records show student has one pending backlog in Semester 7. Degree NOT yet conferred.' },
-          { id: 'e2', label: 'Transcript', content: 'Transcript shows "Result Awaited" for one subject. All other subjects passed.' },
-          { id: 'e3', label: 'Registrar Call', content: 'Registrar confirms: student is currently enrolled and has not yet graduated.' },
+          { id: 'e1', label: 'University Check', content: 'Candidate has a pending backlog in the final year. Expected completion is now 2024.' },
+          { id: 'e2', label: 'Resume Check', content: 'Candidate failed to update their resume after the backlog occurred.' }
         ],
         correctRisks: ['graduation', 'mismatch'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['mismatch', 'not graduated', 'resume says 2023', 'portal says 2024', 'conflicting dates', 'backlog'],
-        misleadingClue: 'The degree type and CGPA match perfectly. The mismatch is in the graduation date — resume says 2023 but portal says December 2024.',
-        ruleApplied: 'When resume and portal graduation dates conflict, always escalate. Never trust the earlier date without verification.',
+        correctDecision: 'reject',
+        strongJustificationKeywords: ['mismatch', 'backlog', '2024', 'not yet graduated'],
+        misleadingClue: 'The resume says 2023, which is in range, but the truth is in the portal: they haven\'t graduated yet.',
+        ruleApplied: 'Always trust the later date if it indicates the candidate has not yet graduated.'
       },
       {
         id: 'gg-2',
-        title: 'Case #GRAD-002',
-        alert: 'Potential Risk Detected',
-        difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Karthik Reddy', 'Degree: B.E. Computer Science', 'University: Osmania University', 'Graduation: May 2021', 'CGPA: 6.8/10'],
-          portal: ['Degree: B.E. CS', 'University: Osmania University', 'Graduation: May 2021', 'CGPA: 6.8/10', 'Backlog History: 1 backlog cleared Sept 2022'],
+        title: 'Case #TIM-102',
+        alert: 'Future Graduate',
+        difficulty: 'easy',
+        targetRole: 'warehouse-manager',
+        templateStyle: 'traditional',
+        resume: {
+          name: 'Rohan Deshmukh',
+          email: 'rohan.d@example.com',
+          phone: '+91 55443 32211',
+          address: 'Nagpur',
+          careerObjective: 'Operations lead.',
+          education: [
+            { institution: 'Nagpur University', degree: 'B.A.', field: 'Economics', graduationYear: '2022', result: '6.5', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Management'],
+          certifications: [],
+          languages: ['English', 'Marathi']
         },
-        evidenceTokens: 2,
+        portal: { degree: 'B.A.', field: 'Economics', graduationYear: '2022', cgpa: '6.5' },
+        evidenceTokens: 1,
         evidence: [
-          { id: 'e1', label: 'Transcript', content: 'Shows supplementary exam passed in September 2022. Original graduation ceremony was May 2021.' },
-          { id: 'e2', label: 'Degree Certificate', content: 'Certificate issued date: November 2022 (after backlog clearance). Degree says "Class of 2021".' },
+          { id: 'e1', label: 'Range Check', content: 'Role requires graduation between 2022 and 2025.' }
         ],
-        correctRisks: ['graduation'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['backlog after graduation', 'effective date 2022', 'degree issued late', 'supplementary exam', 'timeline inconsistency'],
-        misleadingClue: 'The degree says "Class of 2021" but it was actually issued in November 2022 after a backlog was cleared. The stated year is misleading.',
-        ruleApplied: 'When backlogs are cleared after the stated graduation year, the effective graduation date is the backlog clearance date.',
+        correctRisks: [],
+        correctDecision: 'proceed',
+        strongJustificationKeywords: ['valid degree', 'matches', 'within range'],
+        misleadingClue: 'For Warehouse roles, any bachelor\'s degree is valid, including B.A. Economics.',
+        ruleApplied: 'Warehouse Manager roles accept any bachelor\'s degree. Proceed if dates match.'
       },
       {
         id: 'gg-3',
-        title: 'Case #GRAD-003',
-        alert: 'Investigation Required',
-        difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: James Wilson', 'Degree: BS Information Technology', 'University: University of Florida', 'Graduation: May 2025', 'GPA: 3.5/4.0'],
-          portal: ['Degree: BS IT', 'University: University of Florida', 'Graduation: May 2025', 'GPA: 3.5/4.0'],
+        title: 'Case #TIM-103',
+        alert: 'Recent Backlog',
+        difficulty: 'hard',
+        targetRole: 'sde',
+        templateStyle: 'creative',
+        resume: {
+          name: 'Meera Iyer',
+          email: 'meera.i@example.com',
+          phone: '+91 44332 21100',
+          address: 'Bangalore',
+          careerObjective: 'Passionate coder.',
+          education: [
+            { institution: 'PES University', degree: 'B.Tech', field: 'CS', graduationYear: '2025', result: '9.5', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Python', 'ML'],
+          certifications: [],
+          languages: ['English', 'Tamil']
         },
+        portal: { degree: 'B.Tech CS', field: 'CS', graduationYear: '2025', cgpa: '9.5' },
         evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'Enrollment Status', content: 'Student is currently in final semester. Expected completion: May 2025. Degree not yet conferred.' },
-          { id: 'e2', label: 'Academic Standing', content: 'Student is in good academic standing. No pending backlogs or holds.' },
+          { id: 'e1', label: 'Transcript', content: 'Student failed 2 subjects in final semester (May 2023). Cleared them in August 2023.' },
+          { id: 'e2', label: 'Degree Date', content: 'Official degree certificate issued in September 2023.' }
         ],
         correctRisks: ['graduation'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['future date', 'not yet graduated', 'current student', '2025', 'degree not conferred'],
-        misleadingClue: 'Everything matches between resume and portal. The issue is that the graduation date is in the future — the candidate has not yet graduated.',
-        ruleApplied: 'Future graduation dates must always be escalated. A candidate who has not yet graduated cannot be processed as a graduate.',
-      },
-    ],
+        correctDecision: 'proceed',
+        strongJustificationKeywords: ['cleared backlog', '2023', 'eligible', 'September certificate'],
+        misleadingClue: 'The backlog might make you want to reject, but they cleared it within the same year (2023), which is in range.',
+        ruleApplied: 'Candidates who clear backlogs within the required graduation window (2022-2025) are eligible.'
+      }
+    ]
   },
   {
     id: 'university-validator',
     title: 'University Validator',
+    format: 'audit',
     icon: 'fa-university',
-    description: 'Verify university legitimacy, campus locations, and community college credentials',
-    badge: 'Verification Expert',
-    color: '#a855f7',
+    illustration: '/assets/illustrations/university-validator.png',
+    badge: 'Accreditation',
+    color: '#ef4444',
+    description: 'Verify the legitimacy and location of educational institutions.',
     completionMessage: 'You can now verify institutional credibility across regions.',
     scenarios: [
       {
         id: 'uv-1',
-        title: 'Case #UNI-001',
-        alert: 'Potential Risk Detected',
+        title: 'Case #UNI-101',
+        alert: 'Unknown Institution',
         difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Vikram Singh', 'Degree: B.Tech CS', 'University: Global Technical University', 'Campus: Jaipur, Rajasthan', 'Graduation: March 2022', 'CGPA: 9.1/10'],
-          portal: ['Degree: B.Tech Computer Science', 'University: Global Technical University, Jaipur', 'Graduation: March 2022', 'CGPA: 9.1/10'],
+        targetRole: 'sde',
+        templateStyle: 'modern',
+        resume: {
+          name: 'Aditya Birla',
+          email: 'aditya.b@example.com',
+          phone: '+91 33221 10099',
+          address: 'Noida',
+          careerObjective: 'Tech lead.',
+          education: [
+            { institution: 'Global Tech Online University', degree: 'B.Tech', field: 'CS', graduationYear: '2022', result: '9.8', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Full Stack'],
+          certifications: [],
+          languages: ['English']
         },
-        evidenceTokens: 3,
+        portal: { degree: 'B.Tech CS', field: 'CS', graduationYear: '2022', cgpa: '9.8' },
+        evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'UGC Database', content: '"Global Technical University" — NOT FOUND in UGC recognized institutions database.' },
-          { id: 'e2', label: 'AICTE Check', content: 'Not listed in AICTE approved institutions for B.Tech programs.' },
-          { id: 'e3', label: 'Web Research', content: 'Website exists but shows no accreditation badges. No placement records. No verifiable faculty profiles.' },
+          { id: 'e1', label: 'UGC Search', content: '"Apex Tech Institute" is not found in the list of recognized universities.' },
+          { id: 'e2', label: 'Web Research', content: 'No physical campus found. Website looks like a template with no faculty listed.' }
         ],
-        correctRisks: ['university', 'degree'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['not recognized', 'UGC', 'AICTE', 'unaccredited', 'suspicious', 'cannot verify'],
-        misleadingClue: 'High CGPA (9.1) and matching data might create false confidence. The university itself is the red flag.',
-        ruleApplied: 'University verification is mandatory. Unrecognized institutions invalidate the degree regardless of other factors.',
+        correctRisks: ['university'],
+        correctDecision: 'reject',
+        strongJustificationKeywords: ['unrecognized', 'UGC', 'not accredited', 'diploma mill'],
+        misleadingClue: 'The degree name and year are perfect, but the university itself isn\'t legitimate.',
+        ruleApplied: 'Degrees from unrecognized institutions cannot be accepted. Reject for accreditation failure.'
       },
       {
         id: 'uv-2',
-        title: 'Case #UNI-002',
-        alert: 'New Candidate Alert',
+        title: 'Case #UNI-102',
+        alert: 'Satellite Campus',
         difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: Emily Zhang', 'Degree: Associate of Science in CS', 'University: Santa Monica Community College', 'Graduation: May 2022', 'GPA: 3.8/4.0', 'Applied for: SDE role requiring Bachelor\'s degree'],
-          portal: ['Degree: AS Computer Science', 'University: Santa Monica College', 'Graduation: May 2022', 'GPA: 3.8/4.0'],
+        targetRole: 'warehouse-manager',
+        templateStyle: 'traditional',
+        resume: {
+          name: 'Suresh Raina',
+          email: 'suresh.r@example.com',
+          phone: '+91 22110 09988',
+          address: 'Ghaziabad',
+          careerObjective: 'Warehouse expert.',
+          education: [
+            { institution: 'IGNOU', degree: 'B.A.', field: 'History', graduationYear: '2021', result: '6.0', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Logistics'],
+          certifications: [],
+          languages: ['English', 'Hindi']
         },
+        portal: { degree: 'B.A.', field: 'History', graduationYear: '2021', cgpa: '6.0' },
         evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'Degree Level Check', content: 'Associate of Science is a 2-year degree. Role requirement specifies minimum Bachelor\'s (4-year) degree.' },
-          { id: 'e2', label: 'Transfer Records', content: 'No evidence of transfer to a 4-year university. No Bachelor\'s degree earned.' },
+          { id: 'e1', label: 'Campus Check', content: 'Amity Dubai is an official international branch campus of Amity University (India).' },
+          { id: 'e2', label: 'Region Policy', content: 'International campuses of recognized Indian universities are valid for this role.' }
         ],
-        correctRisks: ['degree'],
-        correctDecision: 'reject',
-        strongJustificationKeywords: ['associate', 'not bachelor', 'community college', '2-year', 'does not meet', 'minimum requirement'],
-        misleadingClue: 'Excellent GPA and CS field might seem acceptable, but Associate\'s degree does not meet Bachelor\'s requirement.',
-        ruleApplied: 'Community college Associate\'s degrees do not satisfy Bachelor\'s degree requirements regardless of GPA or field.',
+        correctRisks: [],
+        correctDecision: 'proceed',
+        strongJustificationKeywords: ['official branch', 'Dubai', 'legitimate', 'recognized'],
+        misleadingClue: 'The location is outside India, which might cause hesitation, but it\'s an official branch.',
+        ruleApplied: 'Official international branch campuses of recognized universities are valid.'
       },
       {
         id: 'uv-3',
-        title: 'Case #UNI-003',
-        alert: 'Investigation Required',
-        difficulty: 'easy',
-        visibleData: {
-          resume: ['Name: Sarah Chen', 'Degree: M.Sc Computer Science', 'University: University of Toronto (Scarborough Campus)', 'Graduation: June 2023', 'GPA: 3.7/4.0'],
-          portal: ['Degree: MSc CS', 'University: University of Toronto, Scarborough', 'Graduation: June 2023', 'GPA: 3.7/4.0'],
+        title: 'Case #UNI-103',
+        alert: 'Community College',
+        difficulty: 'medium',
+        targetRole: 'sde',
+        templateStyle: 'creative',
+        resume: {
+          name: 'Tanya Goel',
+          email: 'tanya.g@example.com',
+          phone: '+91 11009 98877',
+          address: 'Indore',
+          careerObjective: 'Aspiring dev.',
+          education: [
+            { institution: 'SGSITS Indore', degree: 'B.E.', field: 'CS', graduationYear: '2023', result: '8.4', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Java'],
+          certifications: [],
+          languages: ['English']
         },
+        portal: { degree: 'B.E. CS', field: 'CS', graduationYear: '2023', cgpa: '8.4' },
         evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'Campus Verification', content: 'UofT Scarborough (UTSC) is an official constituent campus of University of Toronto. Fully accredited.' },
-          { id: 'e2', label: 'Degree Verification', content: 'Degree conferred by University of Toronto. All requirements met. Clean academic record.' },
+          { id: 'e1', label: 'Degree Level', content: 'Associate degree (2-year). Role requires Bachelor\'s degree (4-year) minimum.' },
+          { id: 'e2', label: 'Policy', content: 'Associate degrees do not meet the minimum educational requirement.' }
         ],
-        correctRisks: [],
-        correctDecision: 'proceed',
-        strongJustificationKeywords: ['accredited', 'official campus', 'verified', 'all checks pass', 'UofT', 'recognized'],
-        misleadingClue: 'Scarborough Campus might raise false concerns about being a "satellite" campus — but UTSC is a fully official campus.',
-        ruleApplied: 'Official satellite/constituent campuses of recognized universities are equally valid. Don\'t flag legitimate campuses.',
-      },
-    ],
-  },
-  {
-    id: 'profile-screener',
-    title: 'Profile Screener',
-    icon: 'fa-magnifying-glass-chart',
-    description: 'Validate CGPA thresholds, academic streams, and flag study abroad or exchange cases',
-    badge: 'Profile Analyst',
-    color: '#22c55e',
-    completionMessage: 'You can now screen candidate profiles for eligibility red flags.',
-    scenarios: [
-      {
-        id: 'ps-1',
-        title: 'Case #PRF-001',
-        alert: 'New Candidate Alert',
-        difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: Ankit Sharma', 'Degree: B.Tech Mechanical Engineering', 'University: IIT Kharagpur', 'Graduation: May 2023', 'CGPA: 8.5/10'],
-          portal: ['Degree: B.Tech Mech Eng', 'University: IIT Kharagpur', 'Graduation: May 2023', 'CGPA: 7.2/10', 'Applied for: SDE Role (requires CS/IT)'],
-        },
-        evidenceTokens: 3,
-        evidence: [
-          { id: 'e1', label: 'Transcript', content: 'Final CGPA is 7.2/10. The 8.5 was from semester 5, not final. Resume CGPA is inflated.' },
-          { id: 'e2', label: 'Stream Check', content: 'Mechanical Engineering does not qualify as CS/IT related. No CS minor on record.' },
-          { id: 'e3', label: 'Electives', content: 'Took 2 programming electives but no formal CS specialization or minor.' },
-        ],
-        correctRisks: ['cgpa', 'mismatch', 'stream'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['CGPA mismatch', '8.5 vs 7.2', 'mechanical', 'not CS/IT', 'stream', 'inflated'],
-        misleadingClue: 'IIT Kharagpur is prestigious — but prestige doesn\'t bypass eligibility rules. Multiple red flags here.',
-        ruleApplied: 'CGPA discrepancy + wrong stream = multiple red flags. Always escalate when multiple data points conflict.',
-      },
-      {
-        id: 'ps-2',
-        title: 'Case #PRF-002',
-        alert: 'Investigation Required',
-        difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Lisa Müller', 'Degree: B.Sc Computer Science', 'University: TU Munich (2 semesters) + IIT Bombay (6 semesters)', 'Graduation: July 2023', 'CGPA: 8.0/10'],
-          portal: ['Degree: B.Sc CS', 'University: IIT Bombay', 'Graduation: July 2023', 'CGPA: 8.0/10', 'Note: Exchange program participant'],
-        },
-        evidenceTokens: 3,
-        evidence: [
-          { id: 'e1', label: 'Exchange Program', content: 'Student participated in IIT Bombay-TU Munich exchange. 2 semesters in Germany under formal agreement.' },
-          { id: 'e2', label: 'Credit Transfer', content: 'All credits from TU Munich were transferred and accepted by IIT Bombay. No gaps.' },
-          { id: 'e3', label: 'Degree Authority', content: 'Final degree issued by IIT Bombay. TU Munich semesters appear as transferred credits on transcript.' },
-        ],
-        correctRisks: [],
-        correctDecision: 'proceed',
-        strongJustificationKeywords: ['exchange program', 'credits transferred', 'formal agreement', 'degree from IIT', 'verified', 'clean'],
-        misleadingClue: 'Two universities on the resume might look suspicious, but this is a legitimate exchange program with proper credit transfer.',
-        ruleApplied: 'Study abroad/exchange programs with proper credit transfer are valid. The degree-granting institution is what matters.',
-      },
-      {
-        id: 'ps-3',
-        title: 'Case #PRF-003',
-        alert: 'Potential Risk Detected',
-        difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: David Park', 'Degree: BS Computer Science', 'University: UCLA', 'Graduation: June 2023', 'GPA: 2.7/4.0'],
-          portal: ['Degree: BS CS', 'University: UCLA', 'Graduation: June 2023', 'GPA: 2.7/4.0', 'Minimum GPA Required: 3.0/4.0'],
-        },
-        evidenceTokens: 2,
-        evidence: [
-          { id: 'e1', label: 'GPA Policy', content: 'Company policy: Minimum GPA is 3.0/4.0 for all US candidates. No exceptions without VP approval.' },
-          { id: 'e2', label: 'Transcript', content: 'Official transcript confirms cumulative GPA of 2.7/4.0. Major GPA is 2.9/4.0.' },
-        ],
-        correctRisks: ['cgpa'],
+        correctRisks: ['degree'],
         correctDecision: 'reject',
-        strongJustificationKeywords: ['below minimum', '2.7', '3.0 required', 'does not meet', 'GPA policy', 'below threshold'],
-        misleadingClue: 'UCLA is a prestigious university and CS is the right field — but GPA is below the strict 3.0 minimum.',
-        ruleApplied: 'GPA thresholds are hard requirements. Below-minimum GPA = reject, regardless of university prestige.',
-      },
-    ],
+        strongJustificationKeywords: ['associate', 'not bachelor', 'insufficient level'],
+        misleadingClue: 'De Anza is a very famous community college, but the degree level is the issue.',
+        ruleApplied: 'Associate degrees are ineligible for roles requiring a Bachelor\'s degree.'
+      }
+    ]
   },
   {
-    id: 'risk-decision-lab',
-    title: 'Risk Decision Lab',
-    icon: 'fa-scale-balanced',
-    description: 'Handle complex edge cases: incomplete education, name mismatches, accreditation changes',
-    badge: 'Decision Maker',
-    color: '#ef4444',
-    completionMessage: 'You can now make confident decisions on complex screening edge cases.',
+    id: 'education-audit',
+    title: 'Education Audit',
+    format: 'audit',
+    icon: 'fa-file-invoice',
+    illustration: '/assets/illustrations/education-audit.png',
+    badge: 'Final Review',
+    color: '#22c55e',
+    description: 'Perform a full education profile review and make the final call.',
+    completionMessage: 'You are ready for the Final Challenge!',
     scenarios: [
       {
-        id: 'rd-1',
-        title: 'Case #RISK-001',
-        alert: 'Investigation Required',
-        difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Rajesh Kumar', 'Degree: B.Tech Computer Science', 'University: JNTU Hyderabad', 'Graduation: May 2023', 'CGPA: 7.5/10'],
-          portal: ['Name: Rajesh K. Sharma', 'Degree: B.Tech CS', 'University: JNTU Hyderabad', 'Graduation: May 2023', 'CGPA: 7.5/10'],
-        },
-        evidenceTokens: 3,
-        evidence: [
-          { id: 'e1', label: 'ID Check', content: 'Resume name: "Rajesh Kumar". Portal name: "Rajesh K. Sharma". No name change document provided.' },
-          { id: 'e2', label: 'Degree Certificate', content: 'Certificate shows name as "Rajesh Kumar Sharma" — different from both resume and portal entries.' },
-          { id: 'e3', label: 'Aadhaar Cross-check', content: 'Aadhaar card shows "Rajesh Kumar Sharma". Resume omits surname. Portal abbreviates middle name.' },
-        ],
-        correctRisks: ['mismatch'],
-        correctDecision: 'escalate',
-        strongJustificationKeywords: ['name mismatch', 'different names', 'identity verification', 'no name change document', 'inconsistent'],
-        misleadingClue: 'All academic data matches perfectly. The name variations might seem like minor formatting differences, but they require verification.',
-        ruleApplied: 'Name discrepancies across documents must always be escalated for identity verification, even if they appear minor.',
-      },
-      {
-        id: 'rd-2',
-        title: 'Case #RISK-002',
-        alert: 'Potential Risk Detected',
-        difficulty: 'hard',
-        visibleData: {
-          resume: ['Name: Meera Iyer', 'Degree: B.E. Information Science', 'University: Bangalore University', 'Status: All coursework completed', 'CGPA: 7.8/10'],
-          portal: ['Degree: B.E. IS', 'University: Bangalore University', 'Graduation: Pending', 'CGPA: 7.8/10'],
-        },
-        evidenceTokens: 3,
-        evidence: [
-          { id: 'e1', label: 'Academic Status', content: 'Student has completed all coursework and exams. Final results published. Awaiting convocation for formal degree.' },
-          { id: 'e2', label: 'Provisional Certificate', content: 'University has issued a provisional degree certificate confirming completion of all requirements.' },
-          { id: 'e3', label: 'Policy Check', content: 'Company policy: Provisional certificates are acceptable if issued by the university. Convocation is a formality.' },
-        ],
-        correctRisks: [],
-        correctDecision: 'proceed',
-        strongJustificationKeywords: ['provisional certificate', 'completed', 'all requirements met', 'convocation formality', 'policy allows'],
-        misleadingClue: '"Graduation: Pending" looks alarming, but with a provisional certificate and all requirements completed, this is acceptable per policy.',
-        ruleApplied: 'Provisional certificates from recognized universities are accepted. Waiting for convocation alone is not a blocker.',
-      },
-      {
-        id: 'rd-3',
-        title: 'Case #RISK-003',
-        alert: 'New Candidate Alert',
+        id: 'ea-1',
+        title: 'Case #AUD-101',
+        alert: 'Full Profile Review',
         difficulty: 'medium',
-        visibleData: {
-          resume: ['Name: Tom Anderson', 'Degree: BS Computer Science', 'University: Westfield State University', 'Graduation: May 2020', 'GPA: 3.4/4.0'],
-          portal: ['Degree: BS CS', 'University: Westfield State University', 'Graduation: May 2020', 'GPA: 3.4/4.0'],
+        targetRole: 'sde',
+        templateStyle: 'modern',
+        resume: {
+          name: 'Karan Johar',
+          email: 'karan.j@example.com',
+          phone: '+91 90000 11111',
+          address: 'Mumbai',
+          careerObjective: 'Director of code.',
+          education: [
+            { institution: 'BITS Pilani', degree: 'B.E.', field: 'CS', graduationYear: '2022', result: '8.9', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Management', 'Coding'],
+          certifications: [],
+          languages: ['English']
         },
+        portal: { degree: 'B.E. CS', field: 'CS', graduationYear: '2022', cgpa: '8.9' },
         evidenceTokens: 2,
         evidence: [
-          { id: 'e1', label: 'Accreditation Check', content: 'Westfield State University was accredited by NECHE at time of graduation (2020). Accreditation remains active.' },
-          { id: 'e2', label: 'Verification', content: 'Degree verified through National Student Clearinghouse. All data confirmed accurate.' },
+          { id: 'e1', label: 'UGC Check', content: 'Bangalore University is a recognized state university.' },
+          { id: 'e2', label: 'Verification', content: 'All data points confirmed by third-party background check.' }
         ],
         correctRisks: [],
         correctDecision: 'proceed',
-        strongJustificationKeywords: ['verified', 'accredited', 'all data matches', 'confirmed', 'clean profile', 'meets requirements'],
-        misleadingClue: 'Lesser-known university might trigger unnecessary doubt. But verification confirms everything is legitimate.',
-        ruleApplied: 'When all verification checks pass — accredited university, verified degree, matching data — proceed without over-escalating.',
+        strongJustificationKeywords: ['all clean', 'verified', 'recognized', 'matches'],
+        misleadingClue: 'This is a test of your ability to NOT find problems when none exist.',
+        ruleApplied: 'Clean profiles should be processed quickly to avoid candidate delay.'
       },
-    ],
-  },
+      {
+        id: 'ea-2',
+        title: 'Case #AUD-102',
+        alert: 'Multiple Red Flags',
+        difficulty: 'hard',
+        targetRole: 'sde',
+        templateStyle: 'traditional',
+        resume: {
+          name: 'Ekta Kapoor',
+          email: 'ekta.k@example.com',
+          phone: '+91 80000 22222',
+          address: 'Mumbai',
+          careerObjective: 'Series of code.',
+          education: [
+            { institution: 'Mithibai College', degree: 'B.Sc', field: 'Physics', graduationYear: '2023', result: '9.0', resultType: 'CGPA' }
+          ],
+          experience: [],
+          skills: ['Drama', 'React'],
+          certifications: [],
+          languages: ['English']
+        },
+        portal: { degree: 'B.Sc Physics', field: 'Physics', graduationYear: '2023', cgpa: '7.5' },
+        evidenceTokens: 3,
+        evidence: [
+          { id: 'e1', label: 'Stream Check', content: 'Mechanical Engineering without CS minor is ineligible.' },
+          { id: 'e2', label: 'CGPA Check', content: 'Resume says 9.0, but transcript confirms 7.5. Inflation detected.' },
+          { id: 'e3', label: 'University Check', content: 'College is AICTE approved but CGPA mismatch is a major integrity issue.' }
+        ],
+        correctRisks: ['stream', 'cgpa', 'mismatch'],
+        correctDecision: 'reject',
+        strongJustificationKeywords: ['wrong stream', 'CGPA inflation', 'multiple issues', 'reject'],
+        misleadingClue: 'The high CGPA on the resume might look good, but it\'s both the wrong stream and a lie.',
+        ruleApplied: 'Reject candidates with wrong stream and data integrity issues (CGPA inflation).'
+      }
+    ]
+  }
 ];
