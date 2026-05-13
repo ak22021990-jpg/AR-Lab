@@ -120,7 +120,7 @@ export default function GameHub({ games, completedGames, onSelectGame, onStartAu
       </div>
 
       {/* Train Track Journey Map */}
-      <div className="relative mb-16 min-h-[300px]">
+      <div className="relative mb-16 min-h-[520px]">
         {/* Track Line (Background) */}
         <div className="absolute top-12 left-0 right-0 h-3 bg-border rounded-full -z-10 mx-24 shadow-inner" />
         
@@ -136,7 +136,7 @@ export default function GameHub({ games, completedGames, onSelectGame, onStartAu
         {/* Horizontal Track Container */}
         <div 
           ref={trackRef}
-          className="flex justify-between items-start gap-12 overflow-x-auto pb-16 pt-4 px-24 no-scrollbar snap-x scroll-smooth"
+          className="flex justify-between items-start gap-12 overflow-x-auto pb-48 pt-4 px-24 no-scrollbar snap-x scroll-smooth"
         >
           {stations.map((station, i) => {
             const isAudit = station.isAudit;
