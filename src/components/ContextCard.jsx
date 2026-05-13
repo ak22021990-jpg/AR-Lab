@@ -56,7 +56,7 @@ const ContextCard = ({ cardData, onStart }) => {
         {cardData.illustration && (
           <div className="relative w-full h-48 md:h-56 overflow-hidden shrink-0">
             <img 
-              src={cardData.illustration} 
+              src={`${import.meta.env.BASE_URL}${cardData.illustration}`}
               alt={cardData.title}
               className="w-full h-full object-cover"
             />

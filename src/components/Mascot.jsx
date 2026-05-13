@@ -114,7 +114,7 @@ const Mascot = ({
           </motion.span>
         ) : (
           <motion.img 
-            src={`/assets/mascot/${state}.png`}
+            src={`${import.meta.env.BASE_URL}assets/mascot/${state}.png`}
             alt={`Mascot ${state}`}
             className="w-full h-full object-cover"
             onError={() => setHasError(true)}

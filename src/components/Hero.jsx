@@ -44,7 +44,7 @@ export default function Hero({ onStart }) {
       <motion.div variants={itemVariants} className="relative w-full max-w-lg mb-8">
         <div className="relative z-10 p-4 bg-white rounded-[2.5rem] border-2 border-border shadow-xl">
           <img 
-            src="/assets/illustrations/hero.png"
+            src={`${import.meta.env.BASE_URL}assets/illustrations/hero.png`}
             alt="AMZ3 Training" 
             className="w-full h-auto rounded-3xl"
           />
@@ -81,9 +81,9 @@ export default function Hero({ onStart }) {
         className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mb-12 px-4"
       >
         {[
-          { ill: '/assets/illustrations/eligibility_basics.png', label: 'Learn', desc: '5 Specialized Labs', color: 'text-primary', bg: 'bg-orange-50', Icon: BookOpen },
-          { ill: '/assets/illustrations/degree_detective.png', label: 'Verify', desc: 'Real-world Scenarios', color: 'text-info', bg: 'bg-blue-50', Icon: Search },
-          { ill: '/assets/illustrations/university_validator.png', label: 'Certify', desc: 'Final Audit Lab', color: 'text-success', bg: 'bg-green-50', Icon: FileBadge },
+          { ill: `${import.meta.env.BASE_URL}assets/illustrations/eligibility_basics.png`, label: 'Learn', desc: '5 Specialized Labs', color: 'text-primary', bg: 'bg-orange-50', Icon: BookOpen },
+          { ill: `${import.meta.env.BASE_URL}assets/illustrations/degree_detective.png`, label: 'Verify', desc: 'Real-world Scenarios', color: 'text-info', bg: 'bg-blue-50', Icon: Search },
+          { ill: `${import.meta.env.BASE_URL}assets/illustrations/university_validator.png`, label: 'Certify', desc: 'Final Audit Lab', color: 'text-success', bg: 'bg-green-50', Icon: FileBadge },
         ].map((item, i) => (
           <div key={i} className="card overflow-hidden group hover:-translate-y-1 transition-all duration-300">
             <div className={`h-40 w-full relative ${item.bg}`}>

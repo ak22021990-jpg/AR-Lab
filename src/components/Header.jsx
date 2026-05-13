@@ -66,7 +66,7 @@ export default function Header({ score, riskMeter, currentScenario, totalScenari
             {/* Mascot Avatar */}
             <div className="w-10 h-10 rounded-full bg-bg-muted border-2 border-border overflow-hidden p-0.5 shadow-sm">
               <img 
-                src={`/assets/mascot/${mascotState}.png`} 
+                src={`${import.meta.env.BASE_URL}assets/mascot/${mascotState}.png`}
                 alt="Assistant" 
                 className="w-full h-full object-cover rounded-full"
               />
