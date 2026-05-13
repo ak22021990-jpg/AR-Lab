@@ -134,7 +134,7 @@ export function getRiskBehavior(results) {
   if (roleConfusionCount >= 2) {
     return {
       type: 'Role-Confused',
-      icon: 'fa-shuffle',
+      icon: 'Shuffle',
       color: '#a855f7', // Purple
       detail: 'You are applying SDE technical rules to Warehouse roles. Remember: Warehouse roles accept ANY bachelor\'s degree.'
     };
@@ -143,7 +143,7 @@ export function getRiskBehavior(results) {
   if (totalRisk > 50 || wrongApprovals >= 1) {
     return { 
       type: 'Risk Prone', 
-      icon: 'fa-triangle-exclamation', 
+      icon: 'AlertTriangle', 
       color: '#ef4444', 
       detail: 'You approved high-risk candidates. Review the degree and university rules.' 
     };
@@ -156,7 +156,7 @@ export function getRiskBehavior(results) {
   if (wrongRejections >= 2) {
     return { 
       type: 'Over-Cautious', 
-      icon: 'fa-shield-halved', 
+      icon: 'ShieldCheck', 
       color: '#f59e0b', 
       detail: 'You rejected valid candidates. Ensure you don\'t flag legitimate satellite campuses.' 
     };
@@ -164,7 +164,7 @@ export function getRiskBehavior(results) {
 
   return { 
     type: 'Expert Auditor', 
-    icon: 'fa-award', 
+    icon: 'Award', 
     color: '#22c55e', 
     detail: 'Outstanding judgment. You accurately balanced speed with policy compliance.' 
   };

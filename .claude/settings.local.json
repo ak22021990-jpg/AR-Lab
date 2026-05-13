@@ -9,7 +9,13 @@
       "Bash(cp \"$SRC/illustrations/degree_detective.png\" \"$DST/illustrations/degree-detective.png\")",
       "Bash(cp \"$SRC/illustrations/graduation_gate.png\" \"$DST/illustrations/graduation-gate.png\")",
       "Bash(cp \"$SRC/illustrations/university_validator.png\" \"$DST/illustrations/university-validator.png\")",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(unzip -l Resume.zip)",
+      "Bash(python:*)",
+      "Bash(__NEW_LINE_1b9b6f7668c7a245__ cd:*)",
+      "Bash(__NEW_LINE_1b9b6f7668c7a245__ echo:*)",
+      "Bash(__NEW_LINE_1b9b6f7668c7a245__)",
+      "Bash(head -15 __NEW_LINE_82462b3a4dcb48bf__ echo \"\" echo \"EXPERIENCE LEVEL INDICATORS:\" grep -i \"fresher\\\\|intern\\\\|junior\\\\|senior\\\\|lead\\\\|manager\\\\|director\" resume_data.csv)"
     ]
   }
 }

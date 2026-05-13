@@ -1,26 +1,31 @@
 import React from 'react';
+import { Code, Warehouse } from 'lucide-react';
 
 /**
  * RoleBadge Component
  * Displays the target role for the current screening scenario.
- * 
- * @param {Object} props
- * @param {string} props.role - The target role ('sde' or 'warehouse-manager')
  */
 const RoleBadge = ({ role }) => {
   const isSDE = role?.toLowerCase() === 'sde';
   
   return (
-    <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 animate-scale-in ${
-      isSDE 
-        ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' 
-        : 'bg-purple-500/10 text-purple-400 border border-purple-500/30'
-    }`}>
-      <span className="flex items-center justify-center w-5 h-5 rounded bg-current/10 mr-2">
-        <i className={`fas ${isSDE ? 'fa-code' : 'fa-warehouse'}`}></i>
-      </span>
-      <span>
-        Screening for: <span className="text-white">{isSDE ? 'SDE Role' : 'Warehouse Manager'}</span>
+    <div className={`
+      inline-flex items-center gap-3 px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider
+      border-2 transition-all duration-300 shadow-sm
+      ${isSDE 
+        ? 'bg-blue-50 text-info border-info/20' 
+        : 'bg-orange-50 text-primary border-primary/20'
+      }
+    `}>
+      <div className={`
+        flex items-center justify-center w-7 h-7 rounded-lg
+        ${isSDE ? 'bg-info text-white shadow-blue-200' : 'bg-primary text-white shadow-orange-200'}
+        shadow-sm
+      `}>
+        {isSDE ? <Code size={16} strokeWidth={2.5} /> : <Warehouse size={16} strokeWidth={2.5} />}
+      </div>
+      <span className="flex items-center gap-1.5 opacity-80">
+        Target Role: <span className="font-black text-text-primary">{isSDE ? 'SDE' : 'Warehouse Mgr'}</span>
       </span>
     </div>
   );

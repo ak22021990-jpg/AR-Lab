@@ -1,4 +1,28 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Flag, 
+  ArrowLeft, 
+  ShieldCheck, 
+  ChevronRight, 
+  GraduationCap, 
+  Info, 
+  Code, 
+  Warehouse, 
+  FolderOpen, 
+  FileText, 
+  Server, 
+  Database, 
+  Tags, 
+  Gavel, 
+  CheckCircle, 
+  XCircle, 
+  FileEdit, AlertCircle, 
+  Lock, 
+  Gauge,
+  Check,
+  X
+} from 'lucide-react';
 import { riskTags } from '../data/audit';
 import { contextCards } from '../data/contextCards';
 import { scoreAuditScenario, getRiskLevel } from '../utils/scoring';
@@ -8,13 +32,16 @@ import ComparisonPanel from './ComparisonPanel';
 import RoleBadge from './RoleBadge';
 import ResumeView from './ResumeView';
 import Mascot from './Mascot';
+import { getIcon } from '../utils/iconMap';
+import { playSuccessChime, playErrorTone, playLevelComplete } from '../utils/audio';
 
-export default function AuditGame({ scenarios, gameId, onComplete, onBack, onScenarioChange }) {
+export default function AuditGame({ scenarios, gameId, onComplete, onBack, onScenarioChange, reviewMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealedEvidence, setRevealedEvidence] = useState([]);
   const [tokensUsed, setTokensUsed] = useState(0);
   const [selectedRisks, setSelectedRisks] = useState([]);
   const [decision, setDecision] = useState(null);
+  const [showComparison, setShowComparison] = useState(true);
   const [justification, setJustification] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackData, setFeedbackData] = useState(null);
@@ -23,6 +50,7 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
   const [riskMeter, setRiskMeter] = useState(0);
   const [finished, setFinished] = useState(false);
   const [latestResult, setLatestResult] = useState(null);
+  const [showDebriefExpansion, setShowDebriefExpansion] = useState(false);
 
   useEffect(() => {
     if (onScenarioChange) {
@@ -30,9 +58,7 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
     }
   }, [currentIndex, onScenarioChange, scenarios]);
   
-  // Phase 2: Context Card & Timer State
   const [showContext, setShowContext] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(60);
   const [timerActive, setTimerActive] = useState(false);
   const [gameStartTime, setGameStartTime] = useState(null);
 
@@ -40,33 +66,44 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
   const risk = getRiskLevel(riskMeter);
   const cardData = contextCards[gameId];
 
-  // Progressive timer duration based on game plan (defaults to 60 if not specified)
   const getInitialDuration = () => {
-    if (gameId === 'eligibility-basics') return 120;
-    if (gameId === 'degree-detective') return 100;
+    if (gameId === 'eligibility-basics') return 60;
+    if (gameId === 'degree-detective') return 80;
     if (gameId === 'graduation-gate') return 90;
-    if (gameId === 'university-validator') return 80;
-    if (gameId === 'education-audit') return 60;
-    return 60; // Main Game
+    if (gameId === 'university-validator') return 100;
+    if (gameId === 'education-audit') return 120;
+    if (gameId === 'audit-final') return 150;
+    return 60;
   };
 
   const initialDuration = getInitialDuration();
 
   const handleStartGame = () => {
     setShowContext(false);
-    setTimerActive(true);
-    setGameStartTime(Date.now());
+    if (!reviewMode) {
+      setTimerActive(true);
+      setGameStartTime(Date.now());
+    } else {
+      // In review mode, reveal all evidence and submit correct answer immediately
+      setRevealedEvidence(scenario.evidence.map(e => e.id));
+      setTokensUsed(scenario.evidenceTokens);
+      setSelectedRisks(scenario.correctRisks);
+      setDecision(scenario.correctDecision);
+      setTimeout(() => {
+        handleSubmit(scenario.correctDecision);
+      }, 500);
+    }
   };
 
   const handleTimeUp = () => {
-    if (!showFeedback && !decision) {
-      // Auto-submit with no decision if time runs out
+    if (!showFeedback && !decision && !reviewMode) {
       setDecision('timeout');
       handleSubmit('timeout');
     }
   };
 
   const revealEvidence = (evidenceId) => {
+    if (reviewMode) return;
     if (revealedEvidence.includes(evidenceId)) return;
     if (tokensUsed >= scenario.evidenceTokens) return;
     setRevealedEvidence(prev => [...prev, evidenceId]);
@@ -74,6 +111,7 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
   };
 
   const toggleRisk = (tagId) => {
+    if (reviewMode) return;
     setSelectedRisks(prev =>
       prev.includes(tagId) ? prev.filter(r => r !== tagId) : [...prev, tagId]
     );
@@ -84,15 +122,15 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
     if (!finalDecision && !showFeedback) return;
 
     setTimerActive(false);
-    const durationUsed = (Date.now() - gameStartTime) / 1000;
-    const remaining = Math.max(0, initialDuration - durationUsed);
+    const durationUsed = reviewMode ? 0 : (Date.now() - gameStartTime) / 1000;
+    const remaining = reviewMode ? initialDuration : Math.max(0, initialDuration - durationUsed);
 
     const result = scoreAuditScenario({
       userDecision: finalDecision,
       correctDecision: scenario.correctDecision,
-      userRisks: selectedRisks,
+      userRisks: reviewMode ? scenario.correctRisks : selectedRisks,
       correctRisks: scenario.correctRisks,
-      justification: gameId === 'audit-final' ? justification : '', // Only require justification for main game
+      justification: gameId === 'audit-final' ? (reviewMode ? 'Review Mode - Policy correctly applied.' : justification) : '',
       strongKeywords: scenario.strongJustificationKeywords,
       timeRemaining: remaining,
       totalTime: initialDuration,
@@ -103,14 +141,24 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
       scenarioId: scenario.id,
       userDecision: finalDecision,
       correctDecision: scenario.correctDecision,
-      userRisks: [...selectedRisks],
+      userRisks: reviewMode ? [...scenario.correctRisks] : [...selectedRisks],
       correctRisks: scenario.correctRisks,
       ...result,
     };
 
+    if (!reviewMode) {
+      if (finalDecision === scenario.correctDecision) {
+        playSuccessChime();
+      } else {
+        playErrorTone();
+      }
+    }
+
     setFeedbackData({ ...result, scenario });
-    setTotalScore(prev => prev + result.points);
-    setRiskMeter(prev => prev + result.riskImpact);
+    if (!reviewMode) {
+      setTotalScore(prev => prev + result.points);
+      setRiskMeter(prev => prev + result.riskImpact);
+    }
     setResults(prev => [...prev, newResult]);
     setLatestResult(newResult);
     setShowFeedback(true);
@@ -121,18 +169,42 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
       const allResults = [...results];
       onComplete(allResults, totalScore, riskMeter);
       setFinished(true);
+      playLevelComplete();
     } else {
-      setCurrentIndex(prev => prev + 1);
-      setRevealedEvidence([]);
-      setTokensUsed(0);
-      setSelectedRisks([]);
-      setDecision(null);
-      setJustification('');
-      setShowFeedback(false);
-      setFeedbackData(null);
-      setLatestResult(null);
-      setTimerActive(true);
-      setGameStartTime(Date.now());
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      
+      if (reviewMode) {
+        const nextScenario = scenarios[nextIndex];
+        setRevealedEvidence(nextScenario.evidence.map(e => e.id));
+        setTokensUsed(nextScenario.evidenceTokens);
+        setSelectedRisks(nextScenario.correctRisks);
+        setDecision(nextScenario.correctDecision);
+        setJustification('');
+        setShowFeedback(false);
+        setFeedbackData(null);
+        setLatestResult(null);
+        setShowDebriefExpansion(false);
+        setTimerActive(false);
+        setShowComparison(true);
+        
+        setTimeout(() => {
+          handleSubmit(nextScenario.correctDecision);
+        }, 500);
+      } else {
+        setRevealedEvidence([]);
+        setTokensUsed(0);
+        setSelectedRisks([]);
+        setDecision(null);
+        setJustification('');
+        setShowFeedback(false);
+        setFeedbackData(null);
+        setLatestResult(null);
+        setShowDebriefExpansion(false);
+        setTimerActive(true);
+        setGameStartTime(Date.now());
+        setShowComparison(true);
+      }
     }
   };
 
@@ -142,338 +214,418 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
 
   if (finished) {
     return (
-      <div className="max-w-xl mx-auto text-center animate-scale-in py-20">
-        <div className="glass-card-elevated p-10">
-          <div className="w-16 h-16 rounded-full bg-risk-green/10 border-2 border-risk-green flex items-center justify-center mx-auto mb-6">
-            <i className="fa-solid fa-flag-checkered text-risk-green text-2xl"></i>
+      <div className="max-w-xl mx-auto text-center py-20 px-4">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="card-elevated p-10"
+        >
+          <div className="w-20 h-20 rounded-full bg-success/10 border-4 border-success flex items-center justify-center mx-auto mb-6">
+            <Flag className="text-success w-10 h-10" strokeWidth={3} />
           </div>
-          <h2 className="text-3xl font-outfit font-bold mb-2">Investigation Complete</h2>
-          <p className="text-gray-400 mb-6">All cases have been reviewed. Returning to base...</p>
-          <button onClick={onBack} className="btn-primary">
-            <i className="fa-solid fa-arrow-left"></i> Return to Labs
+          <h2 className="text-3xl font-nunito font-black mb-2 text-text-primary">
+            {reviewMode ? 'Review Complete' : 'Investigation Complete'}
+          </h2>
+          <p className="text-text-secondary font-bold mb-8">
+            {reviewMode ? 'You have finished reviewing all cases.' : 'All cases have been reviewed. Returning to base...'}
+          </p>
+          <button onClick={onBack} className="btn-primary w-full">
+            <ArrowLeft size={18} className="mr-2" /> {reviewMode ? 'Exit Review' : 'Back to Hub'}
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  // Determine if we should show comparison panel (specifically for graduation-gate)
   const isComparisonGame = gameId === 'graduation-gate';
 
   return (
-    <div className="max-w-6xl mx-auto animate-fade-in-up">
+    <div className="max-w-7xl mx-auto px-4 pb-12">
       {/* Feedback Modal */}
-      {showFeedback && feedbackData && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in-up">
-          <div className="glass-card-elevated p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto relative">
-            {/* Mascot Reaction */}
-            <div className="absolute -top-16 -left-16 hidden md:block">
-              <Mascot 
-                state={decision === 'timeout' ? 'thinking' : (decision === scenario.correctDecision ? 'happy' : 'concerned')} 
-                message={decision === 'timeout' ? "Time's up! We need to move faster next time." : (decision === scenario.correctDecision ? "Excellent screening! You followed the SOP perfectly." : "This one was tricky. Let's look at why.")}
-                size="md"
-                position="right"
-              />
-            </div>
-            <h3 className="text-2xl font-outfit font-bold mb-6 text-center">
-              <i className="fa-solid fa-file-shield text-amz-orange mr-2"></i>Case Debrief
-            </h3>
+      <AnimatePresence>
+        {showFeedback && feedbackData && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="card-elevated p-8 max-w-lg w-full relative bg-white shadow-2xl"
+            >
+              <motion.div 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex justify-center mb-4"
+              >
+                <Mascot 
+                  state={decision === 'timeout' ? 'thinking' : (decision === scenario.correctDecision ? 'happy' : 'concerned')} 
+                  size="md"
+                  hideSpeech={true}
+                />
+              </motion.div>
 
-            {/* Decision comparison */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className={`rounded-xl p-4 text-center border ${decision === scenario.correctDecision ? 'animate-celebration-burst' : 'animate-shake'}`} style={{
-                background: decision === scenario.correctDecision ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                borderColor: decision === scenario.correctDecision ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
-              }}>
-                <div className="text-xs text-gray-500 mb-1">Your Decision</div>
-                <div className="font-outfit font-bold capitalize">{decision === 'timeout' ? 'No Decision' : decision}</div>
+              <h3 className="text-2xl font-nunito font-black mb-8 text-center text-text-primary flex items-center justify-center gap-3">
+                <ShieldCheck className="text-primary w-8 h-8" /> Case Debrief
+              </h3>
+
+              <div className="flex flex-col gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                {/* Decision comparison */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className={`rounded-2xl p-5 text-center border-2 transition-all ${decision === scenario.correctDecision ? 'bg-success/5 border-success/30' : 'bg-error/5 border-error/30'}`}>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2">Your Decision</div>
+                    <div className={`font-nunito font-black text-lg ${decision === scenario.correctDecision ? 'text-success' : 'text-error'}`}>
+                      {decision === 'timeout' ? 'No Decision' : decision}
+                    </div>
+                  </div>
+                  <div className="rounded-2xl p-5 text-center bg-bg-muted border-2 border-border">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2">Policy Decision</div>
+                    <div className="font-nunito font-black text-lg text-success capitalize">{scenario.correctDecision}</div>
+                  </div>
+                </div>
+
+                {/* Score breakdown */}
+                <div className="bg-bg-muted/50 rounded-2xl p-6 border-2 border-border">
+                  <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">Performance Analysis</div>
+                  <div className="space-y-2">
+                    {feedbackData.breakdown.map((item, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="text-text-secondary font-bold">{item.label}</span>
+                        <span className={`font-black ${item.points >= 0 ? 'text-success' : 'text-error'}`}>
+                          {item.points > 0 ? '+' : ''}{item.points}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main Teaching Point */}
+                <div className="rounded-2xl p-6 bg-info/5 border-2 border-info/20 relative overflow-hidden group text-left">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    {scenario.targetRole === 'sde' ? <Code size={48} className="text-info" /> : <Warehouse size={48} className="text-info" />}
+                  </div>
+                  
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="text-[10px] text-info font-black uppercase tracking-widest flex items-center gap-2">
+                      <GraduationCap size={14} /> The SOP Says:
+                    </div>
+                    <RoleBadge role={scenario.targetRole} />
+                  </div>
+                  
+                  <p className="text-sm text-text-primary font-bold leading-relaxed mb-4 relative z-10">{scenario.ruleApplied}</p>
+                  
+                  {scenario.sopReference && (
+                    <div className="text-[10px] font-black text-info/60 uppercase tracking-widest mb-4">
+                      Ref: {scenario.sopReference}
+                    </div>
+                  )}
+
+                  <div className={`text-[11px] font-bold p-4 rounded-xl border flex items-center gap-3 ${
+                    scenario.targetRole === 'warehouse-manager' 
+                      ? 'bg-orange-50 text-primary border-primary/20' 
+                      : 'bg-info/10 text-info border-info/20'
+                  }`}>
+                    <AlertCircle size={16} />
+                    <span>
+                      <strong>Role Reminder:</strong> {scenario.targetRole === 'warehouse-manager' 
+                        ? "Warehouse roles accept ANY Bachelor's degree (B.A., B.Com, etc. are all valid)." 
+                        : "SDE roles require CS, IT, or closely related engineering degrees."}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Collapsible Expansion Section (Issue #18) */}
+                <div className="flex flex-col gap-3">
+                  <button 
+                    onClick={() => setShowDebriefExpansion(!showDebriefExpansion)}
+                    className="flex items-center justify-between w-full p-4 rounded-2xl bg-bg-muted hover:bg-border/30 transition-all border-2 border-border group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                        <FileEdit size={16} />
+                      </div>
+                      <span className="text-xs font-black text-text-primary uppercase tracking-widest">Detailed Learning Breakdown</span>
+                    </div>
+                    <ChevronRight 
+                      size={18} 
+                      className={`text-text-muted transition-transform duration-300 ${showDebriefExpansion ? 'rotate-90' : ''}`} 
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {showDebriefExpansion && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="p-6 bg-white border-2 border-border rounded-2xl flex flex-col gap-6 text-left shadow-inner">
+                          {/* Reasoning Chain */}
+                          {scenario.reasoningChain && (
+                            <div>
+                              <h5 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                <CheckCircle size={14} /> Correct Reasoning Chain
+                              </h5>
+                              <div className="space-y-3">
+                                {scenario.reasoningChain.map((step, i) => (
+                                  <div key={i} className="flex gap-3 items-start">
+                                    <div className="w-5 h-5 rounded-full bg-success/10 text-success text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                                      {i + 1}
+                                    </div>
+                                    <p className="text-xs text-text-secondary font-bold leading-relaxed">{step}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Common Mistakes */}
+                          {scenario.commonMistakes && (
+                            <div>
+                              <h5 className="text-[10px] font-black text-error uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                <XCircle size={14} /> Common Mistakes
+                              </h5>
+                              <ul className="space-y-2 list-disc list-inside">
+                                {scenario.commonMistakes.map((mistake, i) => (
+                                  <li key={i} className="text-xs text-text-secondary font-bold leading-relaxed ml-2">{mistake}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Next Time Guidance */}
+                          {scenario.nextTimeGuidance && (
+                            <div className="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
+                              <h5 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">Pro-Tip for Next Case</h5>
+                              <p className="text-xs text-text-primary font-bold italic">"{scenario.nextTimeGuidance}"</p>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <div className="rounded-xl p-4 text-center bg-risk-green/5 border border-risk-green/20">
-                <div className="text-xs text-gray-500 mb-1">Correct</div>
-                <div className="font-outfit font-bold capitalize text-risk-green">{scenario.correctDecision}</div>
+
+              <div className="mt-8">
+                <button 
+                  onClick={handleNext} 
+                  className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-3"
+                >
+                  {currentIndex >= scenarios.length - 1 ? 'Finish Investigation' : 'Next Case'}
+                  <ChevronRight size={20} />
+                </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Main layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 mb-24">
+        {/* Left: Candidate Data */}
+        <div className="flex flex-col gap-6">
+          <div className="card-elevated p-6 flex flex-col bg-white">
+            {/* Header Info */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-border pb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-primary-light border-2 border-primary/20 flex items-center justify-center text-primary shadow-sm">
+                  {getIcon(cardData?.icon) ? React.createElement(getIcon(cardData?.icon), { size: 28 }) : <FolderOpen size={28} />}
+                </div>
+                <div className="text-left">
+                  <div className="flex flex-wrap items-center gap-3 mb-1">
+                    <h2 className="text-2xl font-nunito font-black text-text-primary tracking-tight">{scenario.title}</h2>
+                    <RoleBadge role={scenario.targetRole} />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="px-2 py-0.5 rounded bg-bg-muted text-[10px] font-black text-text-muted border border-border uppercase tracking-widest">
+                      ID: {scenario.id}
+                    </span>
+                    <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em]">
+                      Case {currentIndex + 1} of {scenarios.length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {!reviewMode && (
+                <div className="w-full md:w-64">
+                  <ProgressiveTimer 
+                    duration={initialDuration} 
+                    onTimeUp={handleTimeUp} 
+                    isActive={timerActive} 
+                    key={`${currentIndex}-${currentIndex}`}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Score breakdown */}
-            <div className="mb-6">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-2 font-semibold">Performance Analysis</div>
-              <div className="flex flex-col gap-1">
-                {feedbackData.breakdown.map((item, i) => (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-gray-400">{item.label}</span>
-                    <span className={item.points >= 0 ? 'text-risk-green font-bold' : 'text-risk-red font-bold'}>
-                      {item.points > 0 ? '+' : ''}{item.points}
+            {/* Core Content: Resume View */}
+            <div className="flex flex-col gap-4">
+              {/* Collapsible Comparison Panel (Issue #4 fix) */}
+              {isComparisonGame && (
+                <div className="mb-4">
+                  <AnimatePresence mode="wait">
+                    {showComparison ? (
+                      <motion.div 
+                        key="comparison-open"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="p-6 bg-info/5 border-2 border-info/20 rounded-3xl shadow-sm mb-2 relative group">
+                          <button 
+                            onClick={() => setShowComparison(false)}
+                            className="absolute top-4 right-4 p-2 text-text-muted hover:text-info hover:bg-info/10 rounded-full transition-all z-10"
+                            title="Collapse Comparison"
+                          >
+                            <ChevronRight className="rotate-90" size={18} />
+                          </button>
+                          <ComparisonPanel 
+                            leftData={{ label: "Resume Grad", value: scenario.resume.education?.[0]?.graduationYear }}
+                            rightData={{ label: "Portal Grad", value: scenario.portal.graduationYear }}
+                            title="Timeline Verification"
+                          />
+                          <div className="mt-2 text-center">
+                            <p className="text-[10px] text-text-muted uppercase tracking-widest font-black">
+                              Compare graduation year on document vs portal entry
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.button
+                        key="comparison-closed"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        onClick={() => setShowComparison(true)}
+                        className="w-full py-3 px-6 bg-info/5 border-2 border-info/10 rounded-2xl flex items-center justify-between group hover:bg-info/10 transition-all shadow-sm"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-info/10 text-info flex items-center justify-center">
+                            <Info size={16} />
+                          </div>
+                          <span className="text-xs font-black text-info uppercase tracking-widest">Show Graduation Year Comparison</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] font-black text-info/60 uppercase tracking-widest group-hover:opacity-100 opacity-0 transition-opacity">Expand Details</span>
+                          <ChevronRight size={18} className="text-info group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              <div className="relative group/resume-container min-h-[600px] flex flex-col">
+                <div className="flex items-center justify-between mb-3 px-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted flex items-center gap-2">
+                    <FileText size={14} className="text-error" /> Candidate Resume
+                  </span>
+                  <span className="text-[10px] font-black text-text-muted uppercase tracking-widest bg-bg-muted px-2 py-0.5 rounded">
+                    {scenario.templateStyle}
+                  </span>
+                </div>
+                
+                <div className="flex-1 overflow-hidden rounded-3xl border-2 border-border shadow-xl">
+                  <ResumeView 
+                    resumeData={scenario.resume} 
+                    templateStyle={scenario.templateStyle} 
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Sidebar (Portal + Evidence) */}
+        <div className="flex flex-col gap-8">
+          {/* Portal Panel (Moved from left col for Issue #3) */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between px-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-info flex items-center gap-2">
+                <Server size={14} /> System Portal
+              </span>
+            </div>
+            
+            <div className="rounded-3xl p-6 bg-info/5 border-2 border-info/10 flex flex-col gap-4 shadow-inner relative overflow-hidden group/portal">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-info/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+              
+              <h4 className="text-[10px] font-black text-info uppercase tracking-[0.2em] mb-2 flex items-center gap-2 border-b-2 border-info/10 pb-3 text-left">
+                <Database size={12} /> Application Record
+              </h4>
+              
+              <div className="flex flex-col gap-4 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar relative z-10 text-left">
+                {scenario.portal && Object.entries(scenario.portal).map(([key, value], i) => (
+                  <div key={i} className="flex flex-col gap-1.5 border-b border-info/5 pb-4 last:border-0 hover:bg-info/5 transition-colors rounded-xl p-3 -mx-2">
+                    <span className="text-[9px] font-black text-info/60 uppercase tracking-[0.15em]">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <span className="text-sm text-text-primary font-bold">
+                      {value || <span className="opacity-30 italic text-xs">-- Not provided --</span>}
                     </span>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Rule - Key Teaching Moment */}
-            <div className="mb-8 rounded-xl p-5 bg-cyber-cyan/5 border border-cyber-cyan/20 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                <i className={`fa-solid ${scenario.targetRole === 'sde' ? 'fa-code' : 'fa-warehouse'} text-4xl`}></i>
-              </div>
-              
-              <div className="flex justify-between items-start mb-4">
-                <div className="text-xs text-cyber-cyan uppercase tracking-wider font-bold flex items-center gap-2">
-                  <i className="fa-solid fa-graduation-cap"></i> The SOP Says:
-                </div>
-                <RoleBadge role={scenario.targetRole} />
-              </div>
-              
-              <p className="text-sm text-gray-200 leading-relaxed mb-4 relative z-10">{scenario.ruleApplied}</p>
-              
-              {scenario.targetRole === 'warehouse-manager' && (
-                <div className="text-[11px] text-purple-300/80 italic flex items-center gap-2 mt-2 bg-purple-500/10 p-3 rounded-lg border border-purple-500/20 animate-pulse">
-                  <i className="fa-solid fa-circle-info text-purple-400"></i>
-                  <span><strong>Role Reminder:</strong> Warehouse roles accept <strong>ANY</strong> Bachelor's degree (B.A., B.Com, etc. are all valid).</span>
-                </div>
-              )}
-              {scenario.targetRole === 'sde' && (
-                <div className="text-[11px] text-blue-300/80 italic flex items-center gap-2 mt-2 bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-                  <i className="fa-solid fa-circle-info text-blue-400"></i>
-                  <span><strong>Role Reminder:</strong> SDE roles require CS, IT, or closely related engineering degrees.</span>
-                </div>
-              )}
-            </div>
-
-            <button onClick={handleNext} className="btn-primary w-full group relative overflow-hidden">
-              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              <span className="relative flex items-center justify-center gap-2">
-                <i className="fa-solid fa-forward-step"></i>
-                {currentIndex >= scenarios.length - 1 ? 'Finish Investigation' : 'Next Case'}
-              </span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Main layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        {/* Left: Candidate Data */}
-        <div className="glass-card-elevated p-6 flex flex-col">
-          {/* Header Info */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amz-orange/20 to-amz-orange/5 border border-amz-orange/20 flex items-center justify-center text-amz-orange text-2xl shadow-inner">
-                <i className={`fa-solid ${cardData?.icon || 'fa-folder-open'}`}></i>
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-3 mb-1">
-                  <h2 className="text-2xl font-bold text-white tracking-tight">{scenario.title}</h2>
-                  <RoleBadge role={scenario.targetRole} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 rounded bg-white/5 text-[9px] font-mono text-slate-400 border border-white/10 uppercase">
-                    ID: {scenario.id}
-                  </span>
-                  <p className="text-xs text-slate-500 font-mono uppercase tracking-widest">
-                    Case {currentIndex + 1} of {scenarios.length}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="w-full md:w-64">
-              <ProgressiveTimer 
-                duration={initialDuration} 
-                onTimeUp={handleTimeUp} 
-                isActive={timerActive} 
-                key={`${currentIndex}-${currentIndex}`} // Reset timer on next scenario
-              />
-            </div>
-          </div>
-
-          {/* Core Content: Resume View + Portal Panel */}
-          <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 mb-8 flex-1">
-            <div className="relative group/resume-container min-h-[600px] flex flex-col">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                  <i className="fa-solid fa-file-pdf text-risk-red"></i> Candidate Resume
-                </span>
-                <span className="text-[10px] font-bold text-slate-600 italic">
-                  Template: {scenario.templateStyle}
-                </span>
-              </div>
-              
-              <div className="flex-1 overflow-hidden rounded-2xl border border-white/5 shadow-2xl">
-                <ResumeView 
-                  resumeData={scenario.resume} 
-                  templateStyle={scenario.templateStyle} 
-                />
-              </div>
-              
-              {/* Overlay Comparison Panel for graduation-gate */}
-              {isComparisonGame && (
-                <div className="absolute top-8 left-0 right-0 p-6 bg-amz-dark/90 backdrop-blur-xl border-y border-white/10 z-10 animate-fade-in-down shadow-2xl">
-                  <ComparisonPanel 
-                    leftData={{ label: "Resume Grad", value: scenario.resume.education?.[0]?.graduationYear }}
-                    rightData={{ label: "Portal Grad", value: scenario.portal.graduationYear }}
-                    title="Timeline Verification"
-                  />
-                  <div className="mt-4 text-center">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                      Compare the graduation year on the document vs the portal entry
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyber-cyan flex items-center gap-2">
-                  <i className="fa-solid fa-server"></i> System Portal
-                </span>
-              </div>
-              
-              {/* Portal Panel */}
-              <div className="rounded-2xl p-6 bg-gradient-to-b from-white/[0.03] to-transparent border border-white/10 flex flex-col gap-4 h-full shadow-inner relative overflow-hidden group/portal">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-cyber-cyan/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover/portal:bg-cyber-cyan/10 transition-colors"></div>
-                
-                <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2 border-b border-white/5 pb-2">
-                  <i className="fa-solid fa-database text-[10px]"></i> Application Record
-                </h4>
-                
-                <div className="flex flex-col gap-4 overflow-y-auto max-h-[550px] pr-2 custom-scrollbar relative z-10">
-                  {scenario.portal && Object.entries(scenario.portal).map(([key, value], i) => (
-                    <div key={i} className="flex flex-col gap-1.5 border-b border-white/5 pb-4 last:border-0 hover:bg-white/[0.01] transition-colors rounded-lg p-2 -mx-2">
-                      <span className="text-[9px] font-black text-cyber-cyan/60 uppercase tracking-[0.15em]">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                      <span className="text-sm text-gray-200 font-medium">
-                        {value || <span className="opacity-30 italic text-xs">-- Not provided --</span>}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-white/5">
-                  <div className="flex items-center gap-2 px-3 py-2 bg-cyber-cyan/5 rounded-lg border border-cyber-cyan/10">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyber-cyan animate-pulse"></div>
-                    <span className="text-[9px] font-bold text-cyber-cyan/80 uppercase tracking-widest">Portal Sync Active</span>
-                  </div>
+              <div className="mt-4 pt-4 border-t-2 border-info/10">
+                <div className="flex items-center gap-2 px-3 py-2 bg-info/10 rounded-xl border border-info/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-info animate-pulse"></div>
+                  <span className="text-[10px] font-black text-info uppercase tracking-widest">Portal Sync Active</span>
                 </div>
               </div>
             </div>
           </div>
 
-
-          {/* Risk Tags */}
-          <div className="mb-8">
-            <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-tags text-amz-orange"></i> Identify Issues
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {riskTags.map(tag => (
-                <button
-                  key={tag.id}
-                  onClick={() => !showFeedback && toggleRisk(tag.id)}
-                  className={`risk-tag ${selectedRisks.includes(tag.id) ? 'selected' : ''}`}
-                  disabled={showFeedback}
-                >
-                  <i className={`fa-solid ${tag.icon} mr-1`}></i> {tag.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Simplified Binary Decisions */}
-          <div className="mb-8">
-            <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-gavel text-amz-orange"></i> Decision
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => !showFeedback && setDecision('proceed')} 
-                className={`btn-proceed py-4 ${decision === 'proceed' ? 'active' : ''}`} 
-                disabled={showFeedback}
-              >
-                <i className="fa-solid fa-circle-check text-xl"></i>
-                <div className="text-left">
-                  <div className="text-sm font-bold">Proceed</div>
-                  <div className="text-[10px] opacity-60">Candidate is eligible</div>
-                </div>
-              </button>
-              <button 
-                onClick={() => !showFeedback && setDecision('reject')} 
-                className={`btn-reject py-4 ${decision === 'reject' ? 'active' : ''}`} 
-                disabled={showFeedback}
-              >
-                <i className="fa-solid fa-circle-xmark text-xl"></i>
-                <div className="text-left">
-                  <div className="text-sm font-bold">Reject</div>
-                  <div className="text-[10px] opacity-60">Policy mismatch found</div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Justification (Only for final audit) */}
-          {gameId === 'audit-final' && (
-            <div className="mb-8 animate-fade-in-up">
-              <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                <i className="fa-solid fa-pen-to-square text-amz-orange"></i> Justification
-              </h4>
-              <textarea
-                value={justification}
-                onChange={e => setJustification(e.target.value)}
-                placeholder="Explain your decision..."
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl p-4 text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-amz-orange/50 resize-none h-24 transition-colors"
-                disabled={showFeedback}
-              />
-            </div>
-          )}
-
-          {/* Submit */}
-          <button
-            onClick={() => handleSubmit()}
-            disabled={!decision || showFeedback || (gameId === 'audit-final' && !justification.trim())}
-            className="btn-primary w-full py-4 text-lg"
-          >
-            <i className="fa-solid fa-lock"></i> Lock Decision
-          </button>
-        </div>
-
-        {/* Right: Evidence Panel */}
-        <div className="flex flex-col gap-6">
           {/* Evidence Items */}
-          <div className="glass-card-elevated p-6">
+          <div className="card-elevated p-6 bg-white text-left">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <i className="fa-solid fa-folder-open text-cyber-cyan"></i> Evidence
+              <h4 className="text-xs font-black text-text-primary flex items-center gap-2 uppercase tracking-[0.2em]">
+                <FolderOpen size={16} className="text-info" /> Evidence
               </h4>
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 {Array.from({ length: scenario.evidenceTokens }).map((_, i) => (
-                  <div key={i} className={`w-3 h-3 rounded-full border ${i < tokensUsed ? 'bg-cyber-cyan/20 border-cyber-cyan/40' : 'bg-white/10 border-white/20'}`}></div>
+                  <div 
+                    key={i} 
+                    className={`evidence-token scale-50 -m-2 ${i < tokensUsed ? 'spent' : ''}`}
+                  >
+                    {i + 1}
+                  </div>
                 ))}
               </div>
             </div>
             
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {scenario.evidence.map(ev => {
                 const isRevealed = revealedEvidence.includes(ev.id);
                 return (
-                  <div key={ev.id} className="rounded-xl border border-white/5 overflow-hidden">
+                  <div key={ev.id} className="rounded-2xl overflow-hidden transition-all duration-300">
                     {isRevealed ? (
-                      <div className="p-4 bg-cyber-cyan/5 border-l-2 border-l-cyber-cyan animate-card-flip">
-                        <div className="text-[10px] text-cyber-cyan font-bold uppercase mb-1">{ev.label}</div>
-                        <p className="text-xs text-gray-300 leading-relaxed">{ev.content}</p>
-                      </div>
+                      <motion.div 
+                        initial={{ rotateY: 90 }}
+                        animate={{ rotateY: 0 }}
+                        className="p-5 bg-info/5 border-2 border-info/20 border-l-8 border-l-info shadow-sm"
+                      >
+                        <div className="text-[10px] text-info font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                          <Check size={12} strokeWidth={4} /> {ev.label}
+                        </div>
+                        <p className="text-xs text-text-primary font-bold leading-relaxed">{ev.content}</p>
+                      </motion.div>
                     ) : (
                       <button
                         onClick={() => revealEvidence(ev.id)}
                         disabled={tokensUsed >= scenario.evidenceTokens || showFeedback}
-                        className="w-full p-4 bg-white/[0.02] text-left hover:bg-white/[0.04] transition-colors disabled:opacity-40 disabled:cursor-not-allowed group"
+                        className="w-full p-5 bg-bg-muted text-left hover:bg-bg-muted/80 border-2 border-border transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-cyber-cyan group-hover:border-cyber-cyan/30 transition-colors">
-                            <i className="fa-solid fa-lock"></i>
+                        <div className="flex items-center gap-4 relative z-10">
+                          <div className="w-10 h-10 rounded-xl bg-white border-2 border-border flex items-center justify-center text-text-muted group-hover:text-info group-hover:border-info/30 transition-all shadow-sm">
+                            <Lock size={18} />
                           </div>
                           <div>
-                            <div className="text-xs font-bold text-gray-400">{ev.label}</div>
-                            <div className="text-[10px] text-gray-600">Spend 1 token</div>
+                            <div className="text-xs font-black text-text-primary uppercase tracking-widest mb-1">{ev.label}</div>
+                            <div className="text-[10px] text-text-muted font-bold">Spend 1 Evidence Token</div>
                           </div>
                         </div>
                       </button>
@@ -484,28 +636,130 @@ export default function AuditGame({ scenarios, gameId, onComplete, onBack, onSce
             </div>
           </div>
 
-          {/* Risk Meter (Only for main game or if needed) */}
-          <div className="glass-card-elevated p-6">
-            <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-gauge-high" style={{ color: risk.color === 'green' ? '#22c55e' : risk.color === 'yellow' ? '#f59e0b' : '#ef4444' }}></i>
+          {/* Risk Meter */}
+          <div className="card-elevated p-6 bg-white text-left">
+            <h4 className="text-xs font-black text-text-primary mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
+              <Gauge size={16} className={risk.color === 'green' ? 'text-success' : risk.color === 'yellow' ? 'text-warning' : 'text-error'} />
               Lab Risk Profile
             </h4>
-            <div className="risk-meter-track mb-3">
-              <div className={`risk-meter-fill ${risk.color}`} style={{ width: `${Math.min(riskMeter, 100)}%` }}></div>
+            <div className="risk-meter-track h-4 mb-4 bg-bg-muted border-2 border-border overflow-hidden rounded-full">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(riskMeter, 100)}%` }}
+                className={`risk-meter-fill h-full rounded-full transition-all duration-1000`}
+                style={{ 
+                  backgroundColor: `var(--color-${risk.color === 'green' ? 'success' : risk.color === 'yellow' ? 'warning' : 'error'})` 
+                }}
+              />
             </div>
-            <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-              <span className="text-slate-500">{riskMeter}% Exposure</span>
-              <span style={{ color: risk.color === 'green' ? '#22c55e' : risk.color === 'yellow' ? '#f59e0b' : '#ef4444' }}>
+            <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest">
+              <span className="text-text-muted">{riskMeter}% Exposure</span>
+              <span style={{ color: risk.color === 'green' ? '#58CC02' : risk.color === 'yellow' ? '#FFC800' : '#FF4B4B' }}>
                 {risk.level}
               </span>
             </div>
           </div>
 
           {/* Back */}
-          <button onClick={onBack} className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 px-2">
-            <i className="fa-solid fa-arrow-left-long"></i> Exit Training
+          <button onClick={onBack} className="text-text-muted hover:text-text-primary transition-all text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 py-4 bg-bg-muted rounded-2xl border-2 border-border">
+            <ArrowLeft size={16} /> Back to Hub
           </button>
         </div>
+      </div>
+
+      {/* Sticky Bottom Decision Bar (Issue #3 fix: Always visible controls) */}
+      <div className="sticky bottom-4 z-[40] w-full">
+        <motion.div 
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="card-elevated p-6 bg-white/95 backdrop-blur-md border-2 border-primary/20 shadow-[0_-20px_50px_rgba(0,0,0,0.1)]"
+        >
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+              {/* Risk Tags */}
+              <div className="text-left">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-[10px] font-black text-text-primary flex items-center gap-2 uppercase tracking-widest">
+                    <Tags size={14} className="text-primary" /> Identify Issues
+                  </h4>
+                  <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">
+                    Step 1: Select all applicable risk factors
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {riskTags.map(tag => {
+                    const IconComponent = getIcon(tag.icon);
+                    return (
+                      <button
+                        key={tag.id}
+                        onClick={() => !showFeedback && toggleRisk(tag.id)}
+                        className={`risk-tag text-[11px] py-1.5 px-3 ${selectedRisks.includes(tag.id) ? 'selected' : ''}`}
+                        disabled={showFeedback || reviewMode}
+                      >
+                        {IconComponent && <IconComponent size={12} className="mr-1.5" />}
+                        {tag.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Binary Decisions */}
+              <div className="text-left flex flex-col gap-3">
+                <h4 className="text-[10px] font-black text-text-primary flex items-center gap-2 uppercase tracking-widest">
+                  <Gavel size={14} className="text-primary" /> Step 2: Policy Decision
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    onClick={() => !showFeedback && setDecision('proceed')} 
+                    className={`btn-proceed py-3 px-4 ${decision === 'proceed' ? 'active' : 'opacity-60'} flex items-center gap-3 rounded-xl`} 
+                    disabled={showFeedback || reviewMode}
+                  >
+                    <CheckCircle size={20} />
+                    <div className="text-left">
+                      <div className="text-sm font-black leading-none mb-0.5">Proceed</div>
+                      <div className="text-[9px] font-bold opacity-70 uppercase tracking-widest">Eligible</div>
+                    </div>
+                  </button>
+                  <button 
+                    onClick={() => !showFeedback && setDecision('reject')} 
+                    className={`btn-reject py-3 px-4 ${decision === 'reject' ? 'active' : 'opacity-60'} flex items-center gap-3 rounded-xl`} 
+                    disabled={showFeedback || reviewMode}
+                  >
+                    <XCircle size={20} />
+                    <div className="text-left">
+                      <div className="text-sm font-black leading-none mb-0.5">Reject</div>
+                      <div className="text-[9px] font-bold opacity-70 uppercase tracking-widest">Policy Mismatch</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Justification (Only for final audit) */}
+            {gameId === 'audit-final' && (
+              <div className="text-left">
+                <textarea
+                  value={justification}
+                  onChange={e => setJustification(e.target.value)}
+                  placeholder={reviewMode ? "Review mode enabled." : "Briefly explain the policy application for this case..."}
+                  className="w-full bg-bg-muted border-2 border-border rounded-xl p-3 text-xs text-text-primary font-bold placeholder:text-text-muted focus:outline-none focus:border-primary/50 resize-none h-16 transition-all"
+                  disabled={showFeedback || reviewMode}
+                />
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              onClick={() => handleSubmit()}
+              disabled={!decision || showFeedback || (gameId === 'audit-final' && !justification.trim()) || reviewMode}
+              className={`btn-primary w-full py-4 text-lg flex items-center justify-center gap-3 shadow-lg ${reviewMode ? 'opacity-80' : ''}`}
+            >
+              {reviewMode ? <Check size={20} className="mr-2" /> : <Lock size={20} className="mr-2" />}
+              {reviewMode ? 'Case Verified (Review Mode)' : 'Lock Decision & Verify Case'}
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

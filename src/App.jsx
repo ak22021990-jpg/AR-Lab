@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import confetti from 'canvas-confetti';
-import 'animate.css';
+import { AnimatePresence } from 'framer-motion';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -8,39 +7,44 @@ import GameHub from './components/GameHub';
 import MiniGame from './components/MiniGame';
 import AuditGame from './components/AuditGame';
 import Results from './components/Results';
+import Breadcrumb from './components/Breadcrumb';
+import MotionWrapper from './components/ui/MotionWrapper';
 
 import { miniGames } from './data/games';
 import { auditScenarios } from './data/audit';
+import { triggerConfetti } from './utils/confetti';
 
 export default function App() {
   const [screen, setScreen] = useState('hero');
-  const [activeGameId, setActiveGameId] = useState(null);
+  const [reviewMode, setReviewMode] = useState(false);
   const [completedGames, setCompletedGames] = useState({});
+  const [activeGameId, setActiveGameId] = useState(null);
   const [totalScore, setTotalScore] = useState(0);
   const [riskMeter, setRiskMeter] = useState(0);
+  const [activeRole, setActiveRole] = useState(null);
+  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(null);
   const [auditResults, setAuditResults] = useState([]);
   const [auditScore, setAuditScore] = useState(0);
   const [auditCompleted, setAuditCompleted] = useState(false);
 
-  const [activeRole, setActiveRole] = useState(null);
-  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(null);
-
   const auditUnlocked = Object.keys(completedGames).length >= miniGames.length;
   const activeGame = miniGames.find(g => g.id === activeGameId);
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 150,
-      spread: 90,
-      origin: { y: 0.6 },
-      colors: ['#FF9900', '#00d4ff', '#22c55e', '#FFFFFF'],
-    });
+  const getMascotState = () => {
+    if (screen === 'results') return auditScore > 100 ? 'excited' : 'happy';
+    if (screen === 'audit' || screen === 'game') {
+      if (riskMeter > 70) return 'concerned';
+      return 'thinking';
+    }
+    if (screen === 'hub') return 'happy';
+    return 'neutral';
   };
 
   const handleStart = () => setScreen('hub');
 
-  const handleSelectGame = (id) => {
+  const handleSelectGame = (id, isReview = false) => {
     setActiveGameId(id);
+    setReviewMode(isReview);
     setScreen('game');
   };
 
@@ -52,13 +56,17 @@ export default function App() {
   };
 
   const handleMiniGameComplete = (results, score, risk) => {
-    if (activeGameId) {
+    if (activeGameId && !reviewMode) {
       setCompletedGames(prev => ({
         ...prev,
         [activeGameId]: { score, total: results.length },
       }));
       setTotalScore(prev => prev + score);
-      if (score > 0) triggerConfetti();
+      if (score >= results.length * 10) {
+        triggerConfetti('perfect');
+      } else if (score > 0) {
+        triggerConfetti('default');
+      }
     }
   };
 
@@ -67,21 +75,29 @@ export default function App() {
     setScreen('hub');
     setActiveRole(null);
     setCurrentScenarioIndex(null);
+    setReviewMode(false);
   };
 
-  const handleStartAudit = () => {
+  const handleStartAudit = (isReview = false) => {
+    setReviewMode(isReview);
     setScreen('audit');
   };
 
   const handleAuditComplete = (results, score, risk) => {
-    setAuditResults(results);
-    setAuditScore(score);
-    setRiskMeter(risk);
-    setAuditCompleted(true);
-    setTotalScore(prev => prev + score);
+    if (!reviewMode) {
+      setAuditResults(results);
+      setAuditScore(score);
+      setRiskMeter(risk);
+      setAuditCompleted(true);
+      setTotalScore(prev => prev + score);
+      if (score >= 100) {
+        triggerConfetti('perfect');
+      } else if (score > 0) {
+        triggerConfetti('default');
+      }
+    }
     setActiveRole(null);
     setCurrentScenarioIndex(null);
-    if (score > 0) triggerConfetti();
     setTimeout(() => setScreen('results'), 500);
   };
 
@@ -96,10 +112,11 @@ export default function App() {
     setAuditCompleted(false);
     setActiveRole(null);
     setCurrentScenarioIndex(null);
+    setReviewMode(false);
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-bg-base">
       <Header
         score={totalScore}
         riskMeter={riskMeter}
@@ -113,63 +130,93 @@ export default function App() {
         }
         screen={screen}
         activeRole={activeRole}
+        mascotState={getMascotState()}
+      />
+
+      <Breadcrumb 
+        screen={screen}
+        activeGame={activeGame}
+        currentScenario={currentScenarioIndex}
+        totalScenarios={
+          screen === 'audit' 
+            ? auditScenarios.length 
+            : (screen === 'game' && activeGame) 
+              ? (activeGame.format === 'mcq' ? 5 : activeGame.scenarios.length)
+              : 0
+        }
+        onBackToHub={handleBackToHub}
       />
 
       <main className="flex-1 p-4 md:p-8">
-        {screen === 'hero' && <Hero onStart={handleStart} />}
+        <AnimatePresence mode="wait">
+          {screen === 'hero' && (
+            <MotionWrapper key="hero">
+              <Hero onStart={handleStart} />
+            </MotionWrapper>
+          )}
 
-        {screen === 'hub' && (
-          <GameHub
-            games={miniGames}
-            completedGames={completedGames}
-            onSelectGame={handleSelectGame}
-            onStartAudit={handleStartAudit}
-            auditUnlocked={auditUnlocked}
-            auditCompleted={auditCompleted}
-          />
-        )}
+          {screen === 'hub' && (
+            <MotionWrapper key="hub">
+              <GameHub
+                games={miniGames}
+                completedGames={completedGames}
+                onSelectGame={handleSelectGame}
+                onStartAudit={handleStartAudit}
+                auditUnlocked={auditUnlocked}
+                auditCompleted={auditCompleted}
+              />
+            </MotionWrapper>
+          )}
 
-        {screen === 'game' && activeGame && (
-          activeGame.format === 'mcq' ? (
-            <MiniGame
-              key={activeGameId}
-              game={activeGame}
-              onComplete={handleMiniGameComplete}
-              onBack={handleBackToHub}
-              onScenarioChange={handleScenarioChange}
-            />
-          ) : (
-            <AuditGame
-              key={activeGameId}
-              gameId={activeGameId}
-              scenarios={activeGame.scenarios}
-              onComplete={handleMiniGameComplete}
-              onBack={handleBackToHub}
-              onScenarioChange={handleScenarioChange}
-            />
-          )
-        )}
+          {screen === 'game' && activeGame && (
+            <MotionWrapper key={activeGameId}>
+              {activeGame.format === 'mcq' ? (
+                <MiniGame
+                  game={activeGame}
+                  onComplete={handleMiniGameComplete}
+                  onBack={handleBackToHub}
+                  onScenarioChange={handleScenarioChange}
+                  reviewMode={reviewMode}
+                />
+              ) : (
+                <AuditGame
+                  gameId={activeGameId}
+                  scenarios={activeGame.scenarios}
+                  onComplete={handleMiniGameComplete}
+                  onBack={handleBackToHub}
+                  onScenarioChange={handleScenarioChange}
+                  reviewMode={reviewMode}
+                />
+              )}
+            </MotionWrapper>
+          )}
 
-        {screen === 'audit' && (
-          <AuditGame
-            key="audit-final"
-            gameId="audit-final"
-            scenarios={auditScenarios}
-            onComplete={handleAuditComplete}
-            onBack={handleBackToHub}
-            onScenarioChange={handleScenarioChange}
-          />
-        )}
+          {screen === 'audit' && (
+            <MotionWrapper key="audit-final">
+              <AuditGame
+                gameId="audit-final"
+                scenarios={auditScenarios}
+                onComplete={handleAuditComplete}
+                onBack={handleBackToHub}
+                onScenarioChange={handleScenarioChange}
+                reviewMode={reviewMode}
+              />
+            </MotionWrapper>
+          )}
 
-        {screen === 'results' && (
-          <Results
-            miniGameResults={completedGames}
-            auditResults={auditResults}
-            auditScore={auditScore}
-            riskMeter={riskMeter}
-            onRestart={handleRestart}
-          />
-        )}
+          {screen === 'results' && (
+            <MotionWrapper key="results">
+              <Results
+                miniGameResults={completedGames}
+                auditResults={auditResults}
+                auditScore={auditScore}
+                riskMeter={riskMeter}
+                onRestart={handleRestart}
+                onReview={() => handleStartAudit(true)}
+              />
+            </MotionWrapper>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

@@ -11,90 +11,104 @@ import React from 'react';
  */
 const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = [] }) => {
   if (!resumeData) return (
-    <div className="bg-white p-8 rounded-xl border border-dashed border-gray-300 text-gray-400 text-center italic">
+    <div className="bg-white p-8 rounded-xl border-2 border-dashed border-border text-text-muted text-center italic font-nunito">
       No resume data available to display.
     </div>
   );
 
   const {
     name, email, phone, address, careerObjective,
+    linkedIn, portfolio,
     education = [], experience = [], skills = [],
-    certifications = [], languages = []
+    certifications = [], languages = [],
+    projects = [], volunteerWork = [], extraCurricular = []
   } = resumeData;
+
+  const formatLang = (lang) => typeof lang === 'string' ? lang : `${lang.language} (${lang.proficiency})`;
+  const formatCert = (cert) => typeof cert === 'string' ? cert : `${cert.name} — ${cert.provider} (${cert.issueDate})`;
 
   const isHighlighted = (field) => highlightFields.includes(field);
 
   const renderValue = (value, fieldName) => {
     if (value === null || value === undefined || value === '') {
       return (
-        <span className="opacity-40 italic border-l border-dashed border-gray-400 pl-2 inline-block">
-          -- Not provided --
+        <span className="opacity-25 italic font-medium text-[11px]">
+          Not specified
         </span>
       );
     }
     
     const highlightClass = isHighlighted(fieldName) 
-      ? "bg-amz-orange/20 font-bold px-1 rounded ring-1 ring-amz-orange/30 text-gray-900" 
+      ? "bg-primary/10 font-black px-1.5 rounded-md ring-2 ring-primary/20 text-primary transition-all duration-300" 
       : "";
       
-    return <span className={highlightClass}>{value}</span>;
+    return <span id={`resume-field-${fieldName}`} className={highlightClass}>{value}</span>;
   };
 
   const SectionTitle = ({ title, className = "" }) => {
     const styles = {
-      modern: "text-cyber-cyan font-bold uppercase tracking-wider text-xs mb-3 border-b border-cyber-cyan/20 pb-1 flex items-center gap-2",
-      traditional: "text-gray-900 font-serif font-bold text-base mb-2 border-b border-gray-900 pb-0.5 text-center uppercase tracking-tight",
-      creative: "text-amz-orange font-black text-lg mb-4 flex items-center gap-2 border-l-4 border-amz-orange pl-3"
+      modern: "text-info font-nunito font-black uppercase tracking-widest text-[11px] mb-4 border-b-2 border-info/10 pb-2 flex items-center gap-2",
+      traditional: "text-text-primary font-serif font-black text-base mb-3 border-b-2 border-text-primary pb-1 text-center uppercase tracking-tight",
+      creative: "text-primary font-nunito font-black text-lg mb-4 flex items-center gap-3 border-l-4 border-primary pl-4"
     };
 
     return <h3 className={`${styles[templateStyle] || styles.modern} ${className}`}>{title}</h3>;
   };
 
   // ─── Modern Template ───
-  // Left-aligned, sans-serif, cyan accents, skill pills
   const ModernTemplate = () => (
-    <div className="space-y-8 font-inter text-[13px]">
-      <header className="border-l-8 border-cyber-cyan pl-6 py-2">
-        <h1 className="text-4xl font-outfit font-black text-gray-900 tracking-tight leading-none">
+    <div className="space-y-8 font-nunito text-[13px]">
+      <header className="border-l-[10px] border-info pl-8 py-3">
+        <h1 className="text-4xl font-nunito font-black text-text-primary tracking-tight leading-none">
           {renderValue(name, 'name')}
         </h1>
-        <div className="flex flex-wrap gap-x-6 gap-y-1 mt-4 text-gray-500 font-medium">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-text-secondary font-bold">
           <span className="flex items-center gap-1.5">
-            <span className="text-cyber-cyan">@</span> {renderValue(email, 'email')}
+            <span className="text-info font-black">@</span> {renderValue(email, 'email')}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="text-cyber-cyan">#</span> {renderValue(phone, 'phone')}
+            <span className="text-info font-black">#</span> {renderValue(phone, 'phone')}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="text-cyber-cyan">📍</span> {renderValue(address, 'address')}
+            <span className="text-info">📍</span> {renderValue(address, 'address')}
           </span>
+          {linkedIn && (
+            <span className="flex items-center gap-1.5">
+              <span className="text-info font-black italic">in</span> {renderValue(linkedIn, 'linkedIn')}
+            </span>
+          )}
+          {portfolio && (
+            <span className="flex items-center gap-1.5">
+              <span className="text-info">🔗</span> {renderValue(portfolio, 'portfolio')}
+            </span>
+          )}
         </div>
       </header>
 
       {careerObjective && (
-        <section className="animate-fade-in-up">
+        <section>
           <SectionTitle title="Executive Summary" />
-          <p className="text-gray-700 leading-relaxed text-sm">
+          <p className="text-text-secondary leading-relaxed text-sm font-medium">
             {renderValue(careerObjective, 'careerObjective')}
           </p>
         </section>
       )}
 
-      <section className="animate-fade-in-up delay-100">
+      <section>
         <SectionTitle title="Educational Background" />
-        <div className="space-y-5">
+        <div className="space-y-6">
           {education.map((edu, idx) => (
-            <div key={idx} className="relative pl-6 border-l-2 border-gray-100 hover:border-cyber-cyan/40 transition-colors">
-              <div className="absolute -left-[5px] top-1 w-2 h-2 bg-gray-300 rounded-full"></div>
-              <div className="flex justify-between items-start">
-                <h4 className="font-bold text-gray-900 text-sm">
+            <div key={idx} className="relative pl-8 border-l-2 border-border hover:border-info/40 transition-colors">
+              <div className="absolute -left-[5px] top-1.5 w-2 h-2 bg-info rounded-full shadow-sm"></div>
+              <div className="flex justify-between items-start mb-1">
+                <h4 className="font-black text-text-primary text-sm">
                   {renderValue(edu.degree, 'degree')} in {renderValue(edu.field, 'field')}
                 </h4>
-                <span className="text-cyber-cyan font-bold">{renderValue(edu.graduationYear, 'graduationYear')}</span>
+                <span className="text-info font-black">{renderValue(edu.graduationYear, 'graduationYear')}</span>
               </div>
-              <p className="text-gray-600 font-medium">{renderValue(edu.institution, 'institution')}</p>
-              <div className="mt-1 flex items-center gap-3">
-                <span className="px-2 py-0.5 bg-gray-100 rounded text-[11px] font-bold text-gray-700">
+              <p className="text-text-secondary font-bold">{renderValue(edu.institution, 'institution')}</p>
+              <div className="mt-2 flex items-center gap-3">
+                <span className="px-3 py-1 bg-bg-muted rounded-full text-[11px] font-black text-text-secondary border-2 border-border shadow-sm">
                   {renderValue(edu.resultType, 'resultType')}: {renderValue(edu.result, 'result')}
                 </span>
               </div>
@@ -104,21 +118,22 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
       </section>
 
       {experience.length > 0 && (
-        <section className="animate-fade-in-up delay-200">
+        <section>
           <SectionTitle title="Professional Experience" />
-          <div className="space-y-6">
+          <div className="space-y-8">
             {experience.map((exp, idx) => (
               <div key={idx} className="group">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-bold text-gray-900 text-sm group-hover:text-cyber-cyan transition-colors">
+                <div className="flex justify-between items-baseline mb-2">
+                  <h4 className="font-black text-text-primary text-sm group-hover:text-info transition-colors">
                     {renderValue(exp.position, 'position')}
                   </h4>
-                  <span className="text-gray-400 font-mono text-[11px]">
+                  <span className="text-text-muted font-black text-[11px] uppercase tracking-widest">
                     {renderValue(exp.startDate, 'startDate')} — {renderValue(exp.endDate, 'endDate')}
                   </span>
                 </div>
-                <p className="text-gray-600 font-bold text-xs mb-2">{renderValue(exp.company, 'company')}</p>
-                <p className="text-gray-600 leading-relaxed italic">
+                <p className="text-text-secondary font-black text-xs mb-2 uppercase tracking-wide">{renderValue(exp.company, 'company')}</p>
+                {exp.location && <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em] mb-2 flex items-center gap-1">📍 {exp.location}</p>}
+                <p className="text-text-secondary leading-relaxed font-medium italic bg-bg-muted/30 p-3 rounded-xl border border-border">
                   {renderValue(exp.responsibilities, 'responsibilities')}
                 </p>
               </div>
@@ -127,13 +142,32 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
         </section>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+      {projects.length > 0 && (
+        <section>
+          <SectionTitle title="Key Projects" />
+          <div className="space-y-4">
+            {projects.map((proj, idx) => (
+              <div key={idx} className="bg-bg-muted/50 p-4 rounded-2xl border-2 border-border">
+                <h4 className="font-black text-text-primary text-sm mb-1">{renderValue(proj.name, 'projectName')}</h4>
+                <p className="text-text-secondary text-xs mb-3 italic font-medium">{renderValue(proj.description, 'projectDesc')}</p>
+                <div className="flex flex-wrap gap-2">
+                  {proj.technologies?.map((tech, tidx) => (
+                    <span key={tidx} className="text-[10px] font-black bg-white px-2.5 py-1 rounded-full border-2 border-border text-text-muted uppercase tracking-tighter">{tech}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4">
         {skills.length > 0 && (
-          <section className="animate-fade-in-up delay-300">
+          <section>
             <SectionTitle title="Technical Competencies" />
             <div className="flex flex-wrap gap-2">
               {skills.map((skill, idx) => (
-                <span key={idx} className="px-2.5 py-1 bg-cyber-cyan/5 text-cyber-cyan text-[11px] font-black rounded border border-cyber-cyan/20 uppercase tracking-tighter">
+                <span key={idx} className="px-3 py-1.5 bg-info/5 text-info text-[11px] font-black rounded-xl border-2 border-info/10 uppercase tracking-tighter">
                   {skill}
                 </span>
               ))}
@@ -143,13 +177,13 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
 
         <div className="space-y-8">
           {certifications.length > 0 && (
-            <section className="animate-fade-in-up delay-400">
+            <section>
               <SectionTitle title="Certifications" />
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {certifications.map((cert, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-gray-700">
-                    <span className="text-cyber-cyan mt-1">▹</span>
-                    {renderValue(cert, 'certification')}
+                  <li key={idx} className="flex items-start gap-3 text-text-secondary text-xs font-bold">
+                    <span className="text-info font-black mt-0.5">▹</span>
+                    {formatCert(cert)}
                   </li>
                 ))}
               </ul>
@@ -157,13 +191,13 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
           )}
 
           {languages.length > 0 && (
-            <section className="animate-fade-in-up delay-500">
+            <section>
               <SectionTitle title="Languages" />
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
                 {languages.map((lang, idx) => (
-                  <span key={idx} className="flex items-center gap-1.5 text-gray-600 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan/40"></span>
-                    {lang}
+                  <span key={idx} className="flex items-center gap-2 text-text-secondary font-black text-xs uppercase tracking-tight">
+                    <span className="w-2 h-2 rounded-full bg-info/40"></span>
+                    {formatLang(lang)}
                   </span>
                 ))}
               </div>
@@ -175,26 +209,26 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
   );
 
   // ─── Traditional Template ───
-  // Centered header, serif headings, horizontal rules, dense layout
   const TraditionalTemplate = () => (
-    <div className="space-y-5 font-serif text-[12px] text-gray-800 leading-tight">
-      <header className="text-center space-y-1 border-b-2 border-gray-900 pb-4">
-        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-widest leading-none">
+    <div className="space-y-6 font-serif text-[12px] text-text-secondary leading-tight">
+      <header className="text-center space-y-2 border-b-4 border-text-primary pb-6">
+        <h1 className="text-3xl font-black text-text-primary uppercase tracking-widest leading-none">
           {renderValue(name, 'name')}
         </h1>
-        <div className="flex justify-center flex-wrap gap-x-3 text-gray-700">
+        <div className="flex justify-center flex-wrap gap-x-4 text-text-secondary font-bold uppercase tracking-tighter">
           <span>{renderValue(address, 'address')}</span>
-          <span className="text-gray-300">|</span>
+          <span className="text-border">|</span>
           <span>{renderValue(phone, 'phone')}</span>
-          <span className="text-gray-300">|</span>
-          <span className="underline">{renderValue(email, 'email')}</span>
+          <span className="text-border">|</span>
+          <span className="underline decoration-2">{renderValue(email, 'email')}</span>
+          {linkedIn && <><span className="text-border">|</span> <span>LinkedIn: {linkedIn}</span></>}
         </div>
       </header>
 
       {careerObjective && (
         <section>
           <SectionTitle title="Professional Summary" />
-          <p className="text-justify indent-8">
+          <p className="text-justify indent-8 leading-relaxed font-medium">
             {renderValue(careerObjective, 'careerObjective')}
           </p>
         </section>
@@ -202,16 +236,16 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
 
       <section>
         <SectionTitle title="Education" />
-        <div className="space-y-3">
+        <div className="space-y-4">
           {education.map((edu, idx) => (
             <div key={idx}>
-              <div className="flex justify-between items-baseline font-bold text-gray-900">
-                <span className="text-[13px]">{renderValue(edu.institution, 'institution')}</span>
-                <span>{renderValue(edu.graduationYear, 'graduationYear')}</span>
+              <div className="flex justify-between items-baseline font-black text-text-primary">
+                <span className="text-[14px] uppercase">{renderValue(edu.institution, 'institution')}</span>
+                <span className="font-bold">{renderValue(edu.graduationYear, 'graduationYear')}</span>
               </div>
-              <div className="flex justify-between items-baseline italic">
-                <span>{renderValue(edu.degree, 'degree')} in {renderValue(edu.field, 'field')}</span>
-                <span className="not-italic text-[11px] font-bold">
+              <div className="flex justify-between items-baseline italic font-bold">
+                <span className="text-text-secondary">{renderValue(edu.degree, 'degree')} in {renderValue(edu.field, 'field')}</span>
+                <span className="not-italic text-[11px] font-black bg-bg-muted px-2 py-0.5 rounded uppercase">
                   {renderValue(edu.resultType, 'resultType')}: {renderValue(edu.result, 'result')}
                 </span>
               </div>
@@ -223,15 +257,18 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
       {experience.length > 0 && (
         <section>
           <SectionTitle title="Professional Experience" />
-          <div className="space-y-4">
+          <div className="space-y-6">
             {experience.map((exp, idx) => (
               <div key={idx}>
-                <div className="flex justify-between items-baseline font-bold text-gray-900">
-                  <span className="text-[13px] uppercase">{renderValue(exp.company, 'company')}</span>
-                  <span className="font-normal italic">{renderValue(exp.startDate, 'startDate')} – {renderValue(exp.endDate, 'endDate')}</span>
+                <div className="flex justify-between items-baseline font-black text-text-primary mb-1">
+                  <span className="text-[14px] uppercase tracking-wide">{renderValue(exp.company, 'company')}</span>
+                  <span className="font-bold italic text-text-muted">{renderValue(exp.startDate, 'startDate')} – {renderValue(exp.endDate, 'endDate')}</span>
                 </div>
-                <div className="italic font-medium text-gray-700 mb-1">{renderValue(exp.position, 'position')}</div>
-                <p className="text-gray-700 text-justify leading-snug">
+                <div className="flex justify-between items-baseline italic font-black text-text-secondary mb-1.5">
+                  <span className="text-sm">{renderValue(exp.position, 'position')}</span>
+                  {exp.location && <span className="font-black not-italic uppercase text-[10px] tracking-widest text-text-muted">{exp.location}</span>}
+                </div>
+                <p className="text-text-secondary text-justify leading-relaxed font-medium border-l-2 border-border pl-4">
                   {renderValue(exp.responsibilities, 'responsibilities')}
                 </p>
               </div>
@@ -242,15 +279,15 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
 
       <section>
         <SectionTitle title="Additional Information" />
-        <div className="space-y-1.5">
+        <div className="space-y-2.5 font-bold">
           {skills.length > 0 && (
-            <p><span className="font-bold uppercase text-[11px] tracking-tighter mr-2">Skills:</span> {skills.join(', ')}</p>
+            <p><span className="font-black uppercase text-[11px] tracking-tighter mr-3 text-text-primary">Skills:</span> {skills.join(', ')}</p>
           )}
           {certifications.length > 0 && (
-            <p><span className="font-bold uppercase text-[11px] tracking-tighter mr-2">Certifications:</span> {certifications.join('; ')}</p>
+            <p><span className="font-black uppercase text-[11px] tracking-tighter mr-3 text-text-primary">Certifications:</span> {certifications.map(c => formatCert(c)).join('; ')}</p>
           )}
           {languages.length > 0 && (
-            <p><span className="font-bold uppercase text-[11px] tracking-tighter mr-2">Languages:</span> {languages.join(', ')}</p>
+            <p><span className="font-black uppercase text-[11px] tracking-tighter mr-3 text-text-primary">Languages:</span> {languages.map(l => formatLang(l)).join(', ')}</p>
           )}
         </div>
       </section>
@@ -258,37 +295,42 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
   );
 
   // ─── Creative Template ───
-  // Two-column (sidebar for skills/contact, main for education/experience), orange accent
   const CreativeTemplate = () => (
-    <div className="flex flex-col md:flex-row min-h-[500px] font-inter border border-gray-100 rounded-lg overflow-hidden">
+    <div className="flex flex-col md:flex-row min-h-[500px] font-nunito border-4 border-border rounded-3xl overflow-hidden shadow-2xl">
       {/* Sidebar */}
-      <aside className="w-full md:w-[32%] bg-amz-dark text-white p-6 space-y-8 shrink-0">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-black leading-tight tracking-tighter uppercase italic text-amz-orange">
+      <aside className="w-full md:w-[35%] bg-text-primary text-white p-8 space-y-10 shrink-0">
+        <div className="space-y-8">
+          <h1 className="text-4xl font-black leading-tight tracking-tighter uppercase italic text-primary">
             {renderValue(name, 'name')}
           </h1>
-          <div className="space-y-4 text-xs font-medium">
-            <div className="space-y-1 opacity-80">
-              <p className="uppercase text-[10px] text-amz-orange font-black">Email</p>
+          <div className="space-y-6 text-xs font-black uppercase tracking-widest">
+            <div className="space-y-1.5 opacity-90">
+              <p className="text-[10px] text-primary">Email</p>
               <p className="break-all">{renderValue(email, 'email')}</p>
             </div>
-            <div className="space-y-1 opacity-80">
-              <p className="uppercase text-[10px] text-amz-orange font-black">Phone</p>
+            <div className="space-y-1.5 opacity-90">
+              <p className="text-[10px] text-primary">Phone</p>
               <p>{renderValue(phone, 'phone')}</p>
             </div>
-            <div className="space-y-1 opacity-80">
-              <p className="uppercase text-[10px] text-amz-orange font-black">Location</p>
+            <div className="space-y-1.5 opacity-90">
+              <p className="text-[10px] text-primary">Location</p>
               <p>{renderValue(address, 'address')}</p>
             </div>
+            {linkedIn && (
+              <div className="space-y-1.5 opacity-90">
+                <p className="text-[10px] text-primary">LinkedIn</p>
+                <p className="break-all">{linkedIn}</p>
+              </div>
+            )}
           </div>
         </div>
 
         {skills.length > 0 && (
-          <section className="pt-4 border-t border-white/10">
-            <h3 className="text-amz-orange font-black uppercase text-[10px] tracking-[0.2em] mb-4">Core Strengths</h3>
-            <div className="flex flex-wrap gap-1.5">
+          <section className="pt-8 border-t-2 border-white/10">
+            <h3 className="text-primary font-black uppercase text-[11px] tracking-[0.25em] mb-6">Core Strengths</h3>
+            <div className="flex flex-wrap gap-2">
               {skills.map((skill, idx) => (
-                <span key={idx} className="px-2 py-1 bg-white/10 text-white text-[9px] font-black rounded-sm uppercase tracking-tighter hover:bg-amz-orange transition-colors cursor-default">
+                <span key={idx} className="px-3 py-1.5 bg-white/10 text-white text-[10px] font-black rounded-lg uppercase tracking-tighter hover:bg-primary transition-colors cursor-default border border-white/10">
                   {skill}
                 </span>
               ))}
@@ -297,28 +339,52 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
         )}
 
         {languages.length > 0 && (
-          <section className="pt-4 border-t border-white/10">
-            <h3 className="text-amz-orange font-black uppercase text-[10px] tracking-[0.2em] mb-3">Languages</h3>
-            <div className="space-y-2">
-              {languages.map((lang, idx) => (
-                <div key={idx} className="flex justify-between items-center text-[11px] opacity-90">
-                  <span>{lang}</span>
-                  <div className="flex gap-1">
-                    {[1,2,3,4,5].map(i => <div key={i} className={`w-1 h-1 rounded-full ${i <= 4 ? 'bg-amz-orange' : 'bg-white/20'}`}></div>)}
+          <section className="pt-8 border-t-2 border-white/10">
+            <h3 className="text-primary font-black uppercase text-[11px] tracking-[0.25em] mb-5">Languages</h3>
+            <div className="space-y-4">
+              {languages.map((lang, idx) => {
+                const proficiency = typeof lang === 'string' ? 'Native' : (lang.proficiency || 'Native');
+                const proficiencyMap = {
+                  'Native': 5,
+                  'Bilingual': 5,
+                  'Fluent': 4,
+                  'Professional': 4,
+                  'Intermediate': 3,
+                  'Conversational': 3,
+                  'Basic': 2,
+                  'Elementary': 2,
+                  'Beginner': 1
+                };
+                const level = proficiencyMap[proficiency] || 4;
+
+                return (
+                  <div key={idx} className="space-y-2 text-[11px] font-black uppercase tracking-tight">
+                    <div className="flex justify-between items-center opacity-90">
+                      <span>{typeof lang === 'string' ? lang : lang.language}</span>
+                      <span className="text-[9px] text-primary">{typeof lang === 'string' ? '' : lang.proficiency}</span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      {[1,2,3,4,5].map(i => (
+                        <div 
+                          key={i} 
+                          className={`h-1.5 flex-1 rounded-full ${i <= level ? 'bg-primary' : 'bg-white/20'}`}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 space-y-10 bg-white text-[13px]">
+      <main className="flex-1 p-10 space-y-12 bg-white text-[13px]">
         {careerObjective && (
           <section>
-            <SectionTitle title="Vision" />
-            <p className="text-gray-600 leading-relaxed font-medium italic relative pl-6 before:absolute before:left-0 before:top-0 before:content-['“'] before:text-4xl before:text-amz-orange/20 before:leading-none">
+            <SectionTitle title="Mission Statement" />
+            <p className="text-text-secondary leading-relaxed font-black italic relative pl-8 before:absolute before:left-0 before:top-0 before:content-['“'] before:text-5xl before:text-primary/20 before:leading-none">
               {renderValue(careerObjective, 'careerObjective')}
             </p>
           </section>
@@ -326,22 +392,24 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
 
         <section>
           <SectionTitle title="Education" />
-          <div className="space-y-8">
+          <div className="space-y-10">
             {education.map((edu, idx) => (
               <div key={idx} className="group relative">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-black text-gray-900 text-base leading-tight">
-                    {renderValue(edu.degree, 'degree')} <span className="text-amz-orange">/</span> {renderValue(edu.field, 'field')}
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="font-black text-text-primary text-xl tracking-tight leading-tight uppercase">
+                    {renderValue(edu.degree, 'degree')} <span className="text-primary mx-1">/</span> {renderValue(edu.field, 'field')}
                   </h4>
-                  <span className="shrink-0 ml-4 px-2.5 py-1 bg-amz-dark text-white text-[10px] font-black rounded uppercase">
+                  <span className="shrink-0 ml-4 px-3 py-1 bg-text-primary text-white text-[11px] font-black rounded-xl uppercase tracking-widest shadow-lg">
                     {renderValue(edu.graduationYear, 'graduationYear')}
                   </span>
                 </div>
-                <p className="text-gray-500 font-bold uppercase text-[11px] tracking-wider">{renderValue(edu.institution, 'institution')}</p>
-                <div className="mt-3 inline-flex items-center gap-4 py-1 px-3 bg-gray-50 rounded-full border border-gray-100">
-                  <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Performance</span>
-                  <span className="text-gray-900 font-black text-sm">{renderValue(edu.result, 'result')}</span>
-                  <span className="text-amz-orange font-black text-[10px] uppercase">{renderValue(edu.resultType, 'resultType')}</span>
+                <p className="text-text-muted font-black uppercase text-xs tracking-[0.15em] mb-4">{renderValue(edu.institution, 'institution')}</p>
+                <div className="inline-flex items-center gap-5 py-2 px-5 bg-bg-muted rounded-2xl border-2 border-border shadow-sm">
+                  <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">CREDENTIALS</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-primary font-black text-base">{renderValue(edu.result, 'result')}</span>
+                    <span className="text-primary font-black text-[11px] uppercase">{renderValue(edu.resultType, 'resultType')}</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -351,19 +419,22 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
         {experience.length > 0 && (
           <section>
             <SectionTitle title="Experience" />
-            <div className="space-y-8">
+            <div className="space-y-10">
               {experience.map((exp, idx) => (
-                <div key={idx} className="relative group pl-2">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h4 className="font-black text-gray-900 text-sm group-hover:text-amz-orange transition-colors">
+                <div key={idx} className="relative group">
+                  <div className="flex justify-between items-baseline mb-2">
+                    <h4 className="font-black text-text-primary text-base uppercase tracking-tight group-hover:text-primary transition-colors">
                       {renderValue(exp.position, 'position')}
                     </h4>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.25em]">
                       {renderValue(exp.startDate, 'startDate')} — {renderValue(exp.endDate, 'endDate')}
                     </span>
                   </div>
-                  <p className="text-amz-orange text-[11px] font-black uppercase tracking-widest mb-3">{renderValue(exp.company, 'company')}</p>
-                  <p className="text-gray-600 leading-relaxed text-xs">
+                  <div className="flex justify-between items-baseline mb-4">
+                    <p className="text-primary text-[12px] font-black uppercase tracking-widest">{renderValue(exp.company, 'company')}</p>
+                    {exp.location && <span className="text-[10px] font-black text-text-muted uppercase italic">@{exp.location}</span>}
+                  </div>
+                  <p className="text-text-secondary leading-relaxed font-bold border-l-4 border-bg-muted pl-6 italic">
                     {renderValue(exp.responsibilities, 'responsibilities')}
                   </p>
                 </div>
@@ -376,48 +447,24 @@ const ResumeView = ({ resumeData, templateStyle = 'modern', highlightFields = []
   );
 
   return (
-    <div className="bg-white text-gray-900 shadow-2xl rounded-2xl overflow-hidden border border-white/20 relative group/resume">
+    <div className="bg-white text-text-primary shadow-2xl rounded-[2.5rem] overflow-hidden border-4 border-border relative group/resume">
       {/* Decorative Browser-like header */}
-      <div className="bg-gray-100 px-4 py-2 flex items-center gap-1.5 border-b border-gray-200">
-        <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-        <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-        <div className="ml-4 bg-white px-3 py-0.5 rounded text-[10px] font-bold text-gray-400 flex-1 max-w-xs truncate">
-          {name?.replace(/\s+/g, '_').toLowerCase()}_resume_v2.pdf
+      <div className="bg-bg-muted px-6 py-4 flex items-center gap-2 border-b-4 border-border">
+        <div className="w-3 h-3 rounded-full bg-error/40 border-2 border-error/20"></div>
+        <div className="w-3 h-3 rounded-full bg-primary/40 border-2 border-primary/20"></div>
+        <div className="w-3 h-3 rounded-full bg-success/40 border-2 border-success/20"></div>
+        <div className="ml-6 bg-white px-4 py-1.5 rounded-2xl text-[11px] font-black text-text-muted flex-1 max-w-xs truncate border-2 border-border shadow-inner">
+          {name?.replace(/\s+/g, '_').toLowerCase()}_v2.pdf
         </div>
       </div>
 
-      <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
-        <div className="p-1"> {/* Tiny padding to show shadow inside scroll area if any */}
-          <div className="p-8 md:p-12">
-            {templateStyle === 'modern' && <ModernTemplate />}
-            {templateStyle === 'traditional' && <TraditionalTemplate />}
-            {templateStyle === 'creative' && <CreativeTemplate />}
-          </div>
+      <div className="max-h-[650px] overflow-y-auto custom-scrollbar bg-bg-base">
+        <div className="p-8 md:p-14">
+          {templateStyle === 'modern' && <ModernTemplate />}
+          {templateStyle === 'traditional' && <TraditionalTemplate />}
+          {templateStyle === 'creative' && <CreativeTemplate />}
         </div>
       </div>
-
-      {/* Template Indicator */}
-      <div className="absolute bottom-4 right-4 px-2 py-1 bg-black/10 backdrop-blur-md rounded text-[9px] font-black uppercase tracking-widest text-gray-400 pointer-events-none border border-black/5 opacity-0 group-hover/resume:opacity-100 transition-opacity">
-        Style: {templateStyle}
-      </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f8f9fa;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 20px;
-          border: 2px solid #f8f9fa;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #cbd5e1;
-        }
-      `}} />
     </div>
   );
 };

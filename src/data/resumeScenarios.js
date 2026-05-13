@@ -16,16 +16,26 @@ export const resumeScenarios = [
       email: 'priya.sharma@example.com',
       phone: '+91 98765 43210',
       address: 'Bangalore, Karnataka',
+      linkedIn: 'linkedin.com/in/priyasharma-dev',
+      portfolio: 'github.com/priyasharma',
       careerObjective: 'Aspiring software engineer with strong foundations in Java and Python. Eager to contribute to scalable web applications.',
       education: [
         { institution: 'VIT Vellore', degree: 'B.Tech', field: 'Computer Science', graduationYear: '2022', result: '8.8', resultType: 'CGPA' }
       ],
       experience: [
-        { company: 'TechSolutions Corp', position: 'SDE Intern', startDate: 'Jan 2022', endDate: 'June 2022', responsibilities: 'Developed REST APIs using Spring Boot. Collaborated with frontend teams.' }
+        { company: 'TechSolutions Corp', position: 'SDE Intern', location: 'Bangalore, India', startDate: 'Jan 2022', endDate: 'June 2022', responsibilities: 'Developed REST APIs using Spring Boot. Collaborated with frontend teams.' }
+      ],
+      projects: [
+        { name: 'Campus Connect', description: 'Social networking platform for university students.', technologies: ['React', 'Firebase', 'Tailwind'] }
       ],
       skills: ['Java', 'Spring Boot', 'Python', 'React', 'SQL'],
-      certifications: ['AWS Certified Cloud Practitioner'],
-      languages: ['English', 'Hindi', 'Kannada']
+      certifications: [
+        { name: 'AWS Certified Cloud Practitioner', provider: 'AWS', issueDate: '2022' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Fluent' },
+        { language: 'Hindi', proficiency: 'Native' }
+      ]
     },
     portal: {
       degree: 'B.Tech',
@@ -39,26 +49,35 @@ export const resumeScenarios = [
     targetRole: 'warehouse-manager',
     templateStyle: 'traditional',
     resume: {
-      name: 'Arjun Varma',
-      email: 'arjun.v@example.com',
-      phone: '+91 87654 32109',
-      address: 'Hyderabad, Telangana',
+      name: 'Alex Thompson',
+      email: 'alex.t@example.com',
+      phone: '+1 312-555-0144',
+      address: 'Chicago, IL',
+      linkedIn: 'linkedin.com/in/alext-logistics',
       careerObjective: 'Experienced logistics professional looking for a management role in warehouse operations.',
       education: [
-        { institution: 'Osmania University', degree: 'B.Com', field: 'Commerce', graduationYear: '2021', result: '7.5', resultType: 'CGPA' }
+        { institution: 'DePaul University', degree: 'B.A.', field: 'Business', graduationYear: '2021', result: '3.4', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Global Logistics Ltd', position: 'Floor Supervisor', startDate: 'Aug 2021', endDate: 'Present', responsibilities: 'Managed inventory tracking. Supervised a team of 15 staff members.' }
+        { company: 'Midwest Logistics', position: 'Floor Supervisor', location: 'Chicago, IL', startDate: 'Aug 2021', endDate: 'Present', responsibilities: 'Managed inventory tracking. Supervised a team of 15 staff members.' }
       ],
       skills: ['Inventory Management', 'Supply Chain', 'Team Leadership', 'ERP'],
-      certifications: ['Six Sigma Yellow Belt'],
-      languages: ['English', 'Hindi', 'Telugu']
+      extraCurricular: [
+        { type: 'Sports', organization: 'University Baseball Team', role: 'Captain' }
+      ],
+      certifications: [
+        { name: 'Six Sigma Yellow Belt', provider: 'ASQ', issueDate: '2021' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Spanish', proficiency: 'Conversational' }
+      ]
     },
     portal: {
-      degree: 'B.Com',
-      field: 'Commerce',
+      degree: 'B.A.',
+      field: 'Business',
       graduationYear: '2021',
-      cgpa: '7.5'
+      cgpa: '3.4'
     }
   },
   {
@@ -66,26 +85,35 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Sneha Rao',
-      email: 'sneha.rao@example.com',
-      phone: '+91 76543 21098',
-      address: 'Pune, Maharashtra',
+      name: 'Jordan Smith',
+      email: 'jordan.s@example.com',
+      phone: '+1 206-555-0188',
+      address: 'Seattle, WA',
+      linkedIn: 'linkedin.com/in/jordansmith-dev',
       careerObjective: 'Creative thinker transitioning into tech. Passionate about software development and UI design.',
       education: [
-        { institution: 'Pune University', degree: 'B.A.', field: 'History', graduationYear: '2020', result: '7.2', resultType: 'CGPA' }
+        { institution: 'University of Washington', degree: 'B.A.', field: 'Graphic Design', graduationYear: '2020', result: '3.2', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Creative Agency', position: 'Content Writer', startDate: 'Nov 2020', endDate: 'Dec 2021', responsibilities: 'Wrote technical blogs. Managed social media accounts.' }
+        { company: 'Pixel Art Agency', position: 'Content Writer', location: 'Seattle, WA', startDate: 'Nov 2020', endDate: 'Dec 2021', responsibilities: 'Wrote technical blogs. Managed social media accounts.' }
+      ],
+      volunteerWork: [
+        { organization: 'Tech For All', role: 'Volunteer Tutor', duration: '6 months' }
       ],
       skills: ['HTML', 'CSS', 'JavaScript', 'Copywriting'],
-      certifications: ['Full Stack Development Bootcamp'],
-      languages: ['English', 'Hindi', 'Marathi']
+      certifications: [
+        { name: 'Full Stack Development Bootcamp', provider: 'Udemy', issueDate: '2021' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'French', proficiency: 'Conversational' }
+      ]
     },
     portal: {
       degree: 'B.A.',
-      field: 'History',
+      field: 'Graphic Design',
       graduationYear: '2020',
-      cgpa: '7.2'
+      cgpa: '3.2'
     }
   },
   {
@@ -97,16 +125,23 @@ export const resumeScenarios = [
       email: 'd.miller@example.com',
       phone: '+1 555-0123',
       address: 'Chicago, IL',
+      linkedIn: 'linkedin.com/in/david-miller-ops',
       careerObjective: 'Motivated individual with a strong academic background in sciences, seeking a role in operations management.',
       education: [
         { institution: 'University of Illinois', degree: 'M.Sc', field: 'Physics', graduationYear: '2019', result: '3.8', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Retail Hub', position: 'Stock Lead', startDate: 'Jan 2020', endDate: 'Present', responsibilities: 'Optimized stock placement. Reduced inventory loss by 15%.' }
+        { company: 'Retail Hub', position: 'Stock Lead', location: 'Chicago, IL', startDate: 'Jan 2020', endDate: 'Present', responsibilities: 'Optimized stock placement. Reduced inventory loss by 15%.' }
+      ],
+      extraCurricular: [
+        { type: 'Academic', organization: 'Physics Society', role: 'Member' }
       ],
       skills: ['Data Analysis', 'Problem Solving', 'Strategic Planning'],
       certifications: [],
-      languages: ['English', 'German']
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'German', proficiency: 'Conversational' }
+      ]
     },
     portal: {
       degree: 'M.Sc',
@@ -124,16 +159,23 @@ export const resumeScenarios = [
       email: 'kevin.h@example.com',
       phone: '+1 555-4567',
       address: 'Austin, TX',
+      linkedIn: 'linkedin.com/in/kevin-hart-cloud',
+      portfolio: 'kevin-hart.dev',
       careerObjective: 'SDE with focus on backend systems. Always looking to learn and grow in a fast-paced environment.',
       education: [
-        { institution: 'UT Austin', degree: 'B.S.', field: 'Computer Science', graduationYear: null, result: '3.9', resultType: 'GPA' }
+        { institution: 'UT Austin', degree: 'B.S.', field: 'Computer Science', graduationYear: '2022', result: '3.9', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'CloudWorks', position: 'Software Developer', startDate: 'May 2022', endDate: 'Present', responsibilities: 'Maintained cloud infrastructure. Optimized database queries.' }
+        { company: 'CloudWorks', position: 'Software Developer', location: 'Austin, TX', startDate: 'May 2022', endDate: 'Present', responsibilities: 'Maintained cloud infrastructure. Optimized database queries.' }
+      ],
+      projects: [
+        { name: 'Kubernetes Dashboard', description: 'Monitoring tool for cluster health.', technologies: ['Go', 'React', 'Docker'] }
       ],
       skills: ['Go', 'Docker', 'Kubernetes', 'PostgreSQL'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
     portal: {
       degree: 'B.S.',
@@ -153,60 +195,76 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Rahul Khanna',
-      email: 'rahul.k@example.com',
-      phone: '+91 99887 76655',
-      address: 'Mumbai, Maharashtra',
-      careerObjective: 'Software enthusiast with B.Tech in IT.',
+      name: 'Jason Reed',
+      email: 'jason.r@example.com',
+      phone: '+1 206-555-0122',
+      address: 'Seattle, WA',
+      linkedIn: 'linkedin.com/in/jasonreed-dev',
+      portfolio: 'jason-codes.io',
+      careerObjective: 'Software enthusiast with B.S. in CS.',
       education: [
-        { institution: 'IIT Bombay', degree: 'B.Tech', field: 'Information Technology', graduationYear: '2023', result: '9.2', resultType: 'CGPA' }
+        { institution: 'University of Washington', degree: 'B.S.', field: 'Computer Science', graduationYear: '2023', result: '3.8', resultType: 'GPA' }
       ],
       experience: [],
+      projects: [
+        { name: 'SafePass', description: 'Encrypted password manager.', technologies: ['C++', 'Qt'] }
+      ],
       skills: ['C++', 'Python', 'Data Structures'],
       certifications: [],
-      languages: ['English', 'Hindi']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Tech IT', field: 'Information Technology', graduationYear: '2023', cgpa: '9.2' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2023', cgpa: '3.8' }
   },
   {
     id: 's7',
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Anjali Menon',
-      email: 'anjali.m@example.com',
-      phone: '+91 88776 65544',
-      address: 'Chennai, Tamil Nadu',
-      careerObjective: 'ECE graduate with a minor in Computer Science.',
+      name: 'Chloe Sutherland',
+      email: 'chloe.s@example.com',
+      phone: '+1 416-555-0177',
+      address: 'Toronto, ON',
+      linkedIn: 'linkedin.com/in/chloe-sutherland-eng',
+      careerObjective: 'Engineering graduate with a minor in Computer Science.',
       education: [
-        { institution: 'NIT Trichy', degree: 'B.Tech', field: 'Electronics & Communication', graduationYear: '2022', result: '8.5', resultType: 'CGPA' }
+        { institution: 'University of Toronto', degree: 'B.A.Sc.', field: 'Electrical Engineering', graduationYear: '2022', result: '3.6', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Java', 'Embedded Systems', 'SQL'],
-      certifications: ['Certified CS Minor from NIT Trichy'],
-      languages: ['English', 'Tamil']
+      certifications: [
+        { name: 'Certified CS Minor', provider: 'U of T', issueDate: '2022' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'French', proficiency: 'Conversational' }
+      ]
     },
-    portal: { degree: 'B.Tech ECE', field: 'Electronics', graduationYear: '2022', cgpa: '8.5' }
+    portal: { degree: 'B.A.Sc.', field: 'Electrical Engineering', graduationYear: '2022', cgpa: '3.6' }
   },
   {
     id: 's8',
     targetRole: 'sde',
     templateStyle: 'traditional',
     resume: {
-      name: 'Vikram Singh',
-      email: 'vikram.s@example.com',
-      phone: '+91 77665 54433',
-      address: 'Delhi',
+      name: 'Tyler Morgan',
+      email: 'tyler.m@example.com',
+      phone: '+1 512-555-0133',
+      address: 'Austin, TX',
+      linkedIn: 'linkedin.com/in/tylermorgan-is',
       careerObjective: 'Experienced in business and tech.',
       education: [
-        { institution: 'Delhi University', degree: 'B.Sc', field: 'Information Systems', graduationYear: '2021', result: '7.8', resultType: 'CGPA' }
+        { institution: 'UT Austin', degree: 'B.A.', field: 'Information Systems', graduationYear: '2021', result: '3.1', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Office 365', 'Basic Java'],
       certifications: [],
-      languages: ['English', 'Hindi']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Sc CS', field: 'Computer Science', graduationYear: '2021', cgpa: '7.8' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2021', cgpa: '3.1' }
   },
 
   // Game 3: Graduation Gate (3 scenarios: s9-s11)
@@ -215,60 +273,75 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Ishaan Gupta',
-      email: 'ishaan.g@example.com',
-      phone: '+91 66554 43322',
-      address: 'Gurgaon',
+      name: 'Ryan O\'Connor',
+      email: 'ryan.oc@example.com',
+      phone: '+1 312-555-0166',
+      address: 'Chicago, IL',
+      linkedIn: 'linkedin.com/in/ryanoconnor-dev',
       careerObjective: 'CS graduate.',
       education: [
-        { institution: 'NSUT Delhi', degree: 'B.E.', field: 'Computer Engineering', graduationYear: '2023', result: '8.0', resultType: 'CGPA' }
+        { institution: 'Northwestern University', degree: 'B.S.', field: 'Computer Engineering', graduationYear: '2023', result: '3.5', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['React', 'Node.js'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.E. CE', field: 'Computer Engineering', graduationYear: '2024', cgpa: '8.0' }
+    portal: { degree: 'B.S. CE', field: 'Computer Engineering', graduationYear: '2024', cgpa: '3.5' }
   },
   {
     id: 's10',
     targetRole: 'warehouse-manager',
     templateStyle: 'traditional',
     resume: {
-      name: 'Rohan Deshmukh',
-      email: 'rohan.d@example.com',
-      phone: '+91 55443 32211',
-      address: 'Nagpur',
-      careerObjective: 'Operations lead.',
+      name: 'Emily Chen',
+      email: 'emily.chen@example.ca',
+      phone: '+1 416-555-0199',
+      address: 'Toronto, ON',
+      linkedIn: 'linkedin.com/in/emily-chen-ops',
+      careerObjective: 'Operations lead with a background in economics. Passionate about supply chain optimization.',
       education: [
-        { institution: 'Nagpur University', degree: 'B.A.', field: 'Economics', graduationYear: '2022', result: '6.5', resultType: 'CGPA' }
+        { institution: 'University of Toronto', degree: 'B.A.', field: 'Economics', graduationYear: '2022', result: '3.2', resultType: 'GPA' }
       ],
       experience: [],
-      skills: ['Management'],
+      skills: ['Management', 'Data Analysis', 'Logistics'],
       certifications: [],
-      languages: ['English', 'Marathi']
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Mandarin', proficiency: 'Fluent' }
+      ]
     },
-    portal: { degree: 'B.A.', field: 'Economics', graduationYear: '2022', cgpa: '6.5' }
+    portal: { degree: 'B.A.', field: 'Economics', graduationYear: '2022', cgpa: '3.2' }
   },
   {
     id: 's11',
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Meera Iyer',
-      email: 'meera.i@example.com',
-      phone: '+91 44332 21100',
-      address: 'Bangalore',
+      name: 'Sofia Rodriguez',
+      email: 'sofia.r@example.com',
+      phone: '+1 650-555-0122',
+      address: 'San Francisco, CA',
+      linkedIn: 'linkedin.com/in/sofiarodriguez-dev',
+      portfolio: 'sofia-codes.github.io',
       careerObjective: 'Passionate coder.',
       education: [
-        { institution: 'PES University', degree: 'B.Tech', field: 'CS', graduationYear: '2025', result: '9.5', resultType: 'CGPA' }
+        { institution: 'Stanford University', degree: 'B.S.', field: 'Computer Science', graduationYear: '2025', result: '3.9', resultType: 'GPA' }
       ],
       experience: [],
+      projects: [
+        { name: 'Voice Emotion Analyzer', description: 'ML model to detect emotion from audio.', technologies: ['Python', 'TensorFlow', 'Librosa'] }
+      ],
       skills: ['Python', 'ML'],
       certifications: [],
-      languages: ['English', 'Tamil']
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Spanish', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Tech CS', field: 'CS', graduationYear: '2025', cgpa: '9.5' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2025', cgpa: '3.9' }
   },
 
   // Game 4: University Validator (3 scenarios: s12-s14)
@@ -277,60 +350,70 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Aditya Birla',
-      email: 'aditya.b@example.com',
-      phone: '+91 33221 10099',
-      address: 'Noida',
+      name: 'Nathaniel West',
+      email: 'nathan.w@example.com',
+      phone: '+1 212-555-0199',
+      address: 'New York, NY',
+      linkedIn: 'linkedin.com/in/nathanielwest-dev',
       careerObjective: 'Tech lead.',
       education: [
-        { institution: 'Global Tech Online University', degree: 'B.Tech', field: 'CS', graduationYear: '2022', result: '9.8', resultType: 'CGPA' }
+        { institution: 'Columbia University', degree: 'B.S.', field: 'Computer Science', graduationYear: '2022', result: '3.9', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Full Stack'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Tech CS', field: 'CS', graduationYear: '2022', cgpa: '9.8' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2022', cgpa: '3.9' }
   },
   {
     id: 's13',
     targetRole: 'warehouse-manager',
     templateStyle: 'traditional',
     resume: {
-      name: 'Suresh Raina',
-      email: 'suresh.r@example.com',
-      phone: '+91 22110 09988',
-      address: 'Ghaziabad',
-      careerObjective: 'Warehouse expert.',
+      name: 'James Thompson',
+      email: 'j.thompson@example.ca',
+      phone: '+1 604-555-0122',
+      address: 'Vancouver, BC',
+      linkedIn: 'linkedin.com/in/james-t-vancouver',
+      careerObjective: 'Warehouse expert with a passion for efficiency. Looking to lead operations in a high-growth environment.',
       education: [
-        { institution: 'IGNOU', degree: 'B.A.', field: 'History', graduationYear: '2021', result: '6.0', resultType: 'CGPA' }
+        { institution: 'University of British Columbia', degree: 'B.A.', field: 'History', graduationYear: '2021', result: '3.0', resultType: 'GPA' }
       ],
       experience: [],
-      skills: ['Logistics'],
+      skills: ['Logistics', 'Inventory Management', 'Team Leadership'],
       certifications: [],
-      languages: ['English', 'Hindi']
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'French', proficiency: 'Elementary' }
+      ]
     },
-    portal: { degree: 'B.A.', field: 'History', graduationYear: '2021', cgpa: '6.0' }
+    portal: { degree: 'B.A.', field: 'History', graduationYear: '2021', cgpa: '3.0' }
   },
   {
     id: 's14',
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Tanya Goel',
-      email: 'tanya.g@example.com',
-      phone: '+91 11009 98877',
-      address: 'Indore',
+      name: 'Isabella Ross',
+      email: 'isabella.r@example.com',
+      phone: '+1 604-555-0155',
+      address: 'Vancouver, BC',
+      linkedIn: 'linkedin.com/in/isabellaross-dev',
       careerObjective: 'Aspiring dev.',
       education: [
-        { institution: 'SGSITS Indore', degree: 'B.E.', field: 'CS', graduationYear: '2023', result: '8.4', resultType: 'CGPA' }
+        { institution: 'University of British Columbia', degree: 'B.A.Sc.', field: 'Computer Engineering', graduationYear: '2023', result: '3.4', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Java'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.E. CS', field: 'CS', graduationYear: '2023', cgpa: '8.4' }
+    portal: { degree: 'B.A.Sc. CE', field: 'Computer Engineering', graduationYear: '2023', cgpa: '3.4' }
   },
 
   // Game 5: Education Audit (2 scenarios: s15-s16)
@@ -339,40 +422,47 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Karan Johar',
-      email: 'karan.j@example.com',
-      phone: '+91 90000 11111',
-      address: 'Mumbai',
-      careerObjective: 'Director of code.',
+      name: 'Lucas Bennett',
+      email: 'lucas.b@example.com',
+      phone: '+1 213-555-0111',
+      address: 'Los Angeles, CA',
+      linkedIn: 'linkedin.com/in/lucasbennett-dev',
+      careerObjective: 'Software engineer.',
       education: [
-        { institution: 'BITS Pilani', degree: 'B.E.', field: 'CS', graduationYear: '2022', result: '8.9', resultType: 'CGPA' }
+        { institution: 'UCLA', degree: 'B.S.', field: 'Computer Science', graduationYear: '2022', result: '3.7', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Management', 'Coding'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.E. CS', field: 'CS', graduationYear: '2022', cgpa: '8.9' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2022', cgpa: '3.7' }
   },
   {
     id: 's16',
     targetRole: 'sde',
     templateStyle: 'traditional',
     resume: {
-      name: 'Ekta Kapoor',
-      email: 'ekta.k@example.com',
-      phone: '+91 80000 22222',
-      address: 'Mumbai',
-      careerObjective: 'Series of code.',
+      name: 'Maya Patel',
+      email: 'maya.p@example.com',
+      phone: '+1 619-555-0122',
+      address: 'San Diego, CA',
+      linkedIn: 'linkedin.com/in/mayapatel-physics',
+      careerObjective: 'Physics graduate with coding skills.',
       education: [
-        { institution: 'Mithibai College', degree: 'B.Sc', field: 'Physics', graduationYear: '2023', result: '9.0', resultType: 'CGPA' }
+        { institution: 'UC San Diego', degree: 'B.S.', field: 'Physics', graduationYear: '2023', result: '3.8', resultType: 'GPA' }
       ],
       experience: [],
-      skills: ['Drama', 'React'],
+      skills: ['Data Analysis', 'React'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Gujarati', proficiency: 'Fluent' }
+      ]
     },
-    portal: { degree: 'B.Sc Physics', field: 'Physics', graduationYear: '2023', cgpa: '7.5' }
+    portal: { degree: 'B.S. Physics', field: 'Physics', graduationYear: '2023', cgpa: '3.1' }
   },
 
   // ==========================================
@@ -383,188 +473,220 @@ export const resumeScenarios = [
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Amit Shah',
-      email: 'amit.s@example.com',
-      phone: '+91 70000 33333',
-      address: 'Ahmedabad',
+      name: 'Marcus Thorne',
+      email: 'marcus.t@example.com',
+      phone: '+1 617-555-0133',
+      address: 'Boston, MA',
+      linkedIn: 'linkedin.com/in/marcusthorne-dev',
       careerObjective: 'Strategic dev.',
       education: [
-        { institution: 'Gujarat University', degree: 'B.Tech', field: 'CS', graduationYear: '2022', result: '8.2', resultType: 'CGPA' }
+        { institution: 'MIT', degree: 'B.S.', field: 'Computer Science', graduationYear: '2022', result: '3.8', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Python'],
       certifications: [],
-      languages: ['English', 'Gujarati']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Tech CS', field: 'CS', graduationYear: '2022', cgpa: '8.2' }
+    portal: { degree: 'B.S. CS', field: 'Computer Science', graduationYear: '2022', cgpa: '3.8' }
   },
   {
     id: 's18',
     targetRole: 'warehouse-manager',
     templateStyle: 'traditional',
     resume: {
-      name: 'Narendra Modi',
-      email: 'n.modi@example.com',
-      phone: '+91 60000 44444',
-      address: 'Varanasi',
-      careerObjective: 'National operations.',
+      name: 'Robert Harrison',
+      email: 'robert.h@example.com',
+      phone: '+1 303-555-0144',
+      address: 'Denver, CO',
+      linkedIn: 'linkedin.com/in/robertharrison-ops',
+      careerObjective: 'Operations management.',
       education: [
-        { institution: 'Delhi University', degree: 'B.A.', field: 'Political Science', graduationYear: '1978', result: 'Pass', resultType: 'Grade' }
+        { institution: 'CU Boulder', degree: 'B.A.', field: 'Political Science', graduationYear: '2020', result: '3.2', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Leadership'],
       certifications: [],
-      languages: ['English', 'Hindi', 'Gujarati']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.A.', field: 'Political Science', graduationYear: '1978', cgpa: 'Pass' }
+    portal: { degree: 'B.A.', field: 'Political Science', graduationYear: '2020', cgpa: '3.2' }
   },
   {
     id: 's19',
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Rahul Gandhi',
-      email: 'rahul.g@example.com',
-      phone: '+91 50000 55555',
-      address: 'Wayanad',
+      name: 'William Vance',
+      email: 'william.v@example.com',
+      phone: '+1 404-555-0155',
+      address: 'Atlanta, GA',
+      linkedIn: 'linkedin.com/in/williamvance-dev',
       careerObjective: 'Visionary dev.',
       education: [
-        { institution: 'Cambridge', degree: 'M.Phil', field: 'Development Studies', graduationYear: '1995', result: null, resultType: null }
+        { institution: 'Georgia Tech', degree: 'M.S.', field: 'Public Policy', graduationYear: '2018', result: '3.5', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Communication'],
       certifications: [],
-      languages: ['English', 'Hindi']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'M.Phil', field: 'Development Studies', graduationYear: '1995', cgpa: null }
+    portal: { degree: 'M.S.', field: 'Public Policy', graduationYear: '2018', cgpa: '3.5' }
   },
   {
     id: 's20',
     targetRole: 'sde',
     templateStyle: 'modern',
     resume: {
-      name: 'Arvind Kejriwal',
-      email: 'arvind.k@example.com',
-      phone: '+91 40000 66666',
-      address: 'Delhi',
-      careerObjective: 'Anti-bug dev.',
+      name: 'Stephen Brooks',
+      email: 'stephen.b@example.com',
+      phone: '+1 503-555-0166',
+      address: 'Portland, OR',
+      linkedIn: 'linkedin.com/in/stephenbrooks-eng',
+      careerObjective: 'Mechanical engineer.',
       education: [
-        { institution: 'IIT Kharagpur', degree: 'B.Tech', field: 'Mechanical Engineering', graduationYear: '1989', result: '8.5', resultType: 'CGPA' }
+        { institution: 'Oregon State University', degree: 'B.S.', field: 'Mechanical Engineering', graduationYear: '2021', result: '3.4', resultType: 'GPA' }
       ],
       experience: [],
       skills: ['Analysis'],
       certifications: [],
-      languages: ['English', 'Hindi']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.Tech Mechanical', field: 'Mechanical', graduationYear: '1989', cgpa: '8.5' }
+    portal: { degree: 'B.S. Mechanical', field: 'Mechanical', graduationYear: '2021', cgpa: '3.4' }
   },
   {
     id: 's21',
     targetRole: 'warehouse-manager',
     templateStyle: 'traditional',
     resume: {
-      name: 'Mamata Banerjee',
-      email: 'mamata.b@example.com',
-      phone: '+91 30000 77777',
-      address: 'Kolkata',
+      name: 'Sarah Jenkins',
+      email: 'sarah.j@example.com',
+      phone: '+1 215-555-0177',
+      address: 'Philadelphia, PA',
+      linkedIn: 'linkedin.com/in/sarahjenkins-ops',
       careerObjective: 'Regional operations.',
       education: [
-        { institution: 'Calcutta University', degree: 'M.A.', field: 'Islamic History', graduationYear: '1977', result: null, resultType: null }
+        { institution: 'UPenn', degree: 'M.A.', field: 'History', graduationYear: '2019', result: '3.6', resultType: 'GPA' }
       ],
       experience: [],
-      skills: ['Management'],
+      skills: [ 'Management' ],
       certifications: [],
-      languages: ['English', 'Bengali']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'M.A.', field: 'Islamic History', graduationYear: '1977', cgpa: null }
+    portal: { degree: 'M.A.', field: 'History', graduationYear: '2019', cgpa: '3.6' }
   },
   {
     id: 's22',
     targetRole: 'sde',
     templateStyle: 'creative',
     resume: {
-      name: 'Sundar Pichai',
-      email: 'sundar.p@example.com',
-      phone: '+1 400-500-6000',
-      address: 'Mountain View, CA',
-      careerObjective: 'Global tech lead.',
+      name: 'Michael Chen',
+      email: 'michael.c@example.com',
+      phone: '+1 408-555-0188',
+      address: 'San Jose, CA',
+      linkedIn: 'linkedin.com/in/michaelchen-eng',
+      careerObjective: 'Tech lead.',
       education: [
-        { institution: 'IIT Kharagpur', degree: 'B.Tech', field: 'Metallurgical Engineering', graduationYear: '1993', result: '9.5', resultType: 'CGPA' }
+        { institution: 'San Jose State', degree: 'B.S.', field: 'Materials Engineering', graduationYear: '2021', result: '3.8', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Google', position: 'CEO', startDate: '2015', endDate: 'Present', responsibilities: 'Leading Alphabet and Google.' }
+        { company: 'Tech Corp', position: 'Engineer', location: 'San Jose, CA', startDate: '2021', endDate: 'Present', responsibilities: 'Materials research.' }
       ],
       skills: ['Strategy', 'Tech'],
-      certifications: ['Stanford M.S.', 'Wharton MBA'],
-      languages: ['English', 'Tamil']
+      certifications: [
+        { name: 'M.S. Materials', provider: 'Stanford University', issueDate: '2023' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Mandarin', proficiency: 'Fluent' }
+      ]
     },
-    portal: { degree: 'B.Tech Metallurgy', field: 'Metallurgy', graduationYear: '1993', cgpa: '9.5' }
+    portal: { degree: 'B.S. Materials', field: 'Materials', graduationYear: '2021', cgpa: '3.8' }
   },
   {
     id: 's23',
     targetRole: 'warehouse-manager',
     templateStyle: 'modern',
     resume: {
-      name: 'Satya Nadella',
-      email: 'satya.n@example.com',
-      phone: '+1 300-400-5000',
-      address: 'Redmond, WA',
-      careerObjective: 'Cloud visionary.',
+      name: 'Daniel Park',
+      email: 'daniel.p@example.com',
+      phone: '+1 425-555-0199',
+      address: 'Bellevue, WA',
+      linkedIn: 'linkedin.com/in/danielpark-ops',
+      careerObjective: 'Operations lead.',
       education: [
-        { institution: 'Manipal Institute of Technology', degree: 'B.E.', field: 'Electrical Engineering', graduationYear: '1988', result: '8.8', resultType: 'CGPA' }
+        { institution: 'Bellevue College', degree: 'B.S.', field: 'Electrical Engineering', graduationYear: '2019', result: '3.5', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Microsoft', position: 'CEO', startDate: '2014', endDate: 'Present', responsibilities: 'Cloud and AI lead.' }
+        { company: 'Northwest Tech', position: 'Operations Manager', location: 'Bellevue, WA', startDate: '2019', endDate: 'Present', responsibilities: 'Supply chain management.' }
       ],
       skills: ['Cloud', 'AI'],
-      certifications: ['UWM M.S.', 'Chicago Booth MBA'],
-      languages: ['English', 'Telugu']
+      certifications: [
+        { name: 'Project Management Professional', provider: 'PMI', issueDate: '2021' }
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Korean', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.E. Electrical', field: 'Electrical', graduationYear: '1988', cgpa: '8.8' }
+    portal: { degree: 'B.S. Electrical', field: 'Electrical', graduationYear: '2019', cgpa: '3.5' }
   },
   {
     id: 's24',
     targetRole: 'sde',
     templateStyle: 'traditional',
     resume: {
-      name: 'Elon Musk',
-      email: 'elon.m@example.com',
-      phone: '+1 200-300-4000',
-      address: 'Austin, TX',
-      careerObjective: 'Multi-planetary dev.',
+      name: 'Thomas Sterling',
+      email: 'thomas.s@example.com',
+      phone: '+1 650-555-0144',
+      address: 'Palo Alto, CA',
+      linkedIn: 'linkedin.com/in/thomassterling-dev',
+      careerObjective: 'Physics graduate.',
       education: [
-        { institution: 'University of Pennsylvania', degree: 'B.A.', field: 'Physics', graduationYear: '1997', result: '4.0', resultType: 'GPA' },
-        { institution: 'University of Pennsylvania', degree: 'B.S.', field: 'Economics', graduationYear: '1997', result: '4.0', resultType: 'GPA' }
+        { institution: 'Stanford University', degree: 'B.S.', field: 'Physics', graduationYear: '2020', result: '3.9', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'SpaceX', position: 'CEO', startDate: '2002', endDate: 'Present', responsibilities: 'Rocket science.' }
+        { company: 'Space Labs', position: 'Researcher', location: 'Palo Alto, CA', startDate: '2020', endDate: 'Present', responsibilities: 'Data analysis.' }
       ],
       skills: ['Physics', 'Eng'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.A. Physics', field: 'Physics', graduationYear: '1997', cgpa: '4.0' }
+    portal: { degree: 'B.S. Physics', field: 'Physics', graduationYear: '2020', cgpa: '3.9' }
   },
   {
     id: 's25',
     targetRole: 'warehouse-manager',
     templateStyle: 'creative',
     resume: {
-      name: 'Jeff Bezos',
-      email: 'jeff.b@example.com',
-      phone: '+1 100-200-3000',
-      address: 'Seattle, WA',
-      careerObjective: 'Customer obsession.',
+      name: 'James Blackwell',
+      email: 'james.b@example.com',
+      phone: '+1 305-555-0155',
+      address: 'Miami, FL',
+      linkedIn: 'linkedin.com/in/jamesblackwell-ops',
+      careerObjective: 'Operations management.',
       education: [
-        { institution: 'Princeton University', degree: 'B.S.E.', field: 'Electrical Engineering and Computer Science', graduationYear: '1986', result: '4.2', resultType: 'GPA' }
+        { institution: 'University of Miami', degree: 'B.S.', field: 'Electrical Engineering', graduationYear: '2021', result: '3.8', resultType: 'GPA' }
       ],
       experience: [
-        { company: 'Amazon', position: 'Founder', startDate: '1994', endDate: '2021', responsibilities: 'Building the everything store.' }
+        { company: 'Global Logistics', position: 'Manager', location: 'Miami, FL', startDate: '2021', endDate: 'Present', responsibilities: 'Operations.' }
       ],
       skills: ['Ops', 'Logistics'],
       certifications: [],
-      languages: ['English']
+      languages: [
+        { language: 'English', proficiency: 'Native' }
+      ]
     },
-    portal: { degree: 'B.S.E. EECS', field: 'EECS', graduationYear: '1986', cgpa: '4.2' }
-  }
+    portal: { degree: 'B.S. EE', field: 'Electrical Engineering', graduationYear: '2021', cgpa: '3.8' }
+  },
 ];
